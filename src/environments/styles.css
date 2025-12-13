@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: dark --default, dark --prefersdark, sunset;
+}
+
+/* ===== Fuente Montserrat ===== */
+@font-face {
+  font-family: "Montserrat";
+  src: url("/assets/fonts/Montserrat-Medium.ttf") format("truetype"); /* tu ruta */
+  font-weight: 500;   /* Medium */
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Usar Montserrat como sans por defecto de Tailwind */
+@theme {
+  --font-montserrat: "Montserrat", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+}
+
+/* Utilidad para usar Montserrat explícitamente */
+@utility font-montserrat {
+  font-family: var(--font-montserrat);
+}
+
+
