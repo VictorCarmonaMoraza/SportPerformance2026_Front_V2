@@ -1,7 +1,7 @@
 
-export namespace AuthInterface {
+export namespace LoginResponse {
 
-  export interface InfoUser {
+  export interface Login {
     deportista?: Deportista;
     message: string;
     status: number;
