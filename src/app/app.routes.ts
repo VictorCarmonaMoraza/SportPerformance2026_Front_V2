@@ -25,4 +25,12 @@ export const routes: Routes = [
   //   path: '',
   //   // loadChildren: () => import('./store-front/store-front.routes')
   // }
+  {
+    path: 'sport',
+    loadChildren: () => import('./sportPerformance/sport.routes')
+  },
+  {
+    path: '**',
+    redirectTo: 'auth/login'
+  }
 ];
