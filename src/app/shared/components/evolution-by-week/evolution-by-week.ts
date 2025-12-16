@@ -25,9 +25,9 @@ export class EvolutionByWeek {
 
   option: EChartsOption = {
     color: ['#80FFA5', '#00DDFF', '#37A2FF', '#FF0087', '#FFBF00'],
-    title: {
-      text: 'Gradient Stacked Area Chart'
-    },
+    // title: {
+    //   // text: 'Gradient Stacked Area Chart'
+    // },
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -38,6 +38,9 @@ export class EvolutionByWeek {
       }
     },
     legend: {
+      top: 2,
+      left: 'center',
+      icon: 'rect',
       data: ['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5']
     },
     toolbox: {
@@ -49,13 +52,40 @@ export class EvolutionByWeek {
       {
         type: 'category',
         boundaryGap: false,
-        data: this.diasSemana
+        data: this.diasSemana,
+        axisLabel: {
+          color: '#000',   // color del texto
+          fontSize: 12,
+          fontWeight: 'bold'
+        },
+        axisLine: {
+          lineStyle: {
+            color: '#000'  // color de la línea del eje
+          }
+        }
       }
     ],
     yAxis: [
       {
-        type: 'value'
-      }
+        type: 'value',
+        axisLabel: {
+          color: '#000',   // color de los números
+          fontSize: 12,
+          fontWeight: 'bold'
+        },
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: '#000'
+          }
+        },
+        splitLine: {
+          lineStyle: {
+            color: 'rgba(255,255,255,0.2)' // líneas horizontales suaves
+          }
+        }
+      },
+
     ],
     series: [
       {
@@ -64,7 +94,8 @@ export class EvolutionByWeek {
         stack: 'Total',
         smooth: true,
         lineStyle: {
-          width: 0
+          width: 1,
+          color: '#000'
         },
         showSymbol: false,
         areaStyle: {
@@ -91,7 +122,8 @@ export class EvolutionByWeek {
         stack: 'Total',
         smooth: true,
         lineStyle: {
-          width: 0
+          width: 1,
+          color: '#000'
         },
         showSymbol: false,
         areaStyle: {
@@ -118,7 +150,8 @@ export class EvolutionByWeek {
         stack: 'Total',
         smooth: true,
         lineStyle: {
-          width: 0
+          width: 1,
+          color: '#000'
         },
         showSymbol: false,
         areaStyle: {
@@ -145,7 +178,8 @@ export class EvolutionByWeek {
         stack: 'Total',
         smooth: true,
         lineStyle: {
-          width: 0
+          width: 1,
+          color: '#000'
         },
         showSymbol: false,
         areaStyle: {
@@ -172,7 +206,8 @@ export class EvolutionByWeek {
         stack: 'Total',
         smooth: true,
         lineStyle: {
-          width: 0
+          width: 1,
+          color: '#000'
         },
         showSymbol: false,
         label: {
