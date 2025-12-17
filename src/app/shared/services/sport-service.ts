@@ -12,7 +12,6 @@ export class SportService {
   private metricUrl = `${environment.apiUrl}/sport`;
   readonly #http = inject(HttpClient)
 
-  /* ====== estado interno ====== */
   private userId = signal<number | null>(null);
 
   getInfoUser(deportista_id: number): Observable<SportApi.SportResponse> {
@@ -25,7 +24,6 @@ export class SportService {
     this.userId.set(id);
   }
 
-  /* ====== resource compartido ====== */
   readonly infoUserResource = rxResource({
     params: () => {
       const id = this.userId();
@@ -33,7 +31,7 @@ export class SportService {
     },
     stream: ({ params }) => {
       if (!params) {
-        return NEVER;   // 🔥 CLAVE
+        return NEVER;
       }
       return this.getInfoUser(params.id);
     }

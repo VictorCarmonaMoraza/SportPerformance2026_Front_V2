@@ -1,4 +1,4 @@
-import { Component, computed, effect, EventEmitter, inject, OnInit, output, Output } from '@angular/core';
+import { Component, computed, effect, inject, output } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { EChartsOption } from 'echarts';
@@ -14,21 +14,19 @@ import { Charts } from "../charts/charts";
   styleUrl: './evolution-by-week.css',
 })
 export class EvolutionByWeek {
-
+  //Servicios
   metricsService = inject(MetricsService)
   sportService = inject(SportService)
-  activatedRoute = inject(ActivatedRoute)
   readonly infoUserResource = this.sportService.infoUserResource;
 
-
-  titleChange = output<string>();
+  //Rutas
+  activatedRoute = inject(ActivatedRoute)
 
   id_user = toSignal(
     this.activatedRoute.params.pipe(map(params => params['id']),
       tap(id => console.log('ID desde ruta:', id))
     )
   )
-
 
   //Desestructuramos la data para obtener el id y
   // Resource dependiente
@@ -47,14 +45,12 @@ export class EvolutionByWeek {
     }
   });
 
-
   readonly metrics = computed(() => {
     const value = this.weekResource.value();
     return value?.metrics && Array.isArray(value.metrics)
       ? value.metrics
       : [];
   });
-
 
   readonly daysOfWeek = computed(() =>
     this.metrics().map((m: { fecha: string; }) => this.getWeekDay(m.fecha))
@@ -66,7 +62,6 @@ export class EvolutionByWeek {
     });
   }
 
-
   constructor() {
     effect(() => {
       const id = this.id_user();
@@ -75,20 +70,12 @@ export class EvolutionByWeek {
       }
     });
 
-    effect(() => {
-      const user = this.infoUserResource.value();
-      const disciplina = user?.deportista?.disciplina_deportiva;
-
-      if (disciplina) {
-        this.titleChange.emit(disciplina.toString());
-      }
-
-      console.log('Información del deportista:', user);
-      console.log('Calorías:', this.caloriasSerie());
-      console.log('Distancia:', this.distanciaSerie());
-      console.log('Velocidad media:', this.velocidadSerie());
-      console.log('Días de la semana:', this.daysOfWeek());
-    });
+    // effect(() => {
+    //   console.log('Calorías:', this.caloriasSerie());
+    //   console.log('Distancia:', this.distanciaSerie());
+    //   console.log('Velocidad media:', this.velocidadSerie());
+    //   console.log('Días de la semana:', this.daysOfWeek());
+    // });
   }
 
 

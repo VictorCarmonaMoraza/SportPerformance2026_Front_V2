@@ -26,11 +26,10 @@ export class UserInfoPage {
     effect(() => {
       const user = this.infoUserResource.value();
       if (!user) return;
-
+      this.title = user.deportista.disciplina_deportiva;
       console.log('------>Info usuario:', user);
       console.log('------>Deportista:', user.deportista);
     });
   }
-
 
 }
