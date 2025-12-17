@@ -18,11 +18,10 @@ export class EvolutionByWeek {
   metricsService = inject(MetricsService)
   sportService = inject(SportService)
   activatedRoute = inject(ActivatedRoute)
+  readonly infoUserResource = this.sportService.infoUserResource;
+
 
   titleChange = output<string>();
-
-
-
 
   id_user = toSignal(
     this.activatedRoute.params.pipe(map(params => params['id']),
@@ -30,12 +29,6 @@ export class EvolutionByWeek {
     )
   )
 
-  infoUserResource = rxResource({
-    params: () => ({ id: this.id_user() }),
-    stream: ({ params }) => {
-      return this.sportService.getInfoUser(params.id);
-    }
-  })
 
   //Desestructuramos la data para obtener el id y
   // Resource dependiente
@@ -55,12 +48,16 @@ export class EvolutionByWeek {
   });
 
 
-  readonly metrics = computed(() =>
-    this.weekResource.value()?.metrics ?? []
-  );
+  readonly metrics = computed(() => {
+    const value = this.weekResource.value();
+    return value?.metrics && Array.isArray(value.metrics)
+      ? value.metrics
+      : [];
+  });
+
 
   readonly daysOfWeek = computed(() =>
-    this.metrics().map(m => this.getWeekDay(m.fecha))
+    this.metrics().map((m: { fecha: string; }) => this.getWeekDay(m.fecha))
   );
 
   private getWeekDay(fecha: string): string {
@@ -71,6 +68,13 @@ export class EvolutionByWeek {
 
 
   constructor() {
+    effect(() => {
+      const id = this.id_user();
+      if (id) {
+        this.sportService.setUserId(Number(id));
+      }
+    });
+
     effect(() => {
       const user = this.infoUserResource.value();
       const disciplina = user?.deportista?.disciplina_deportiva;
@@ -89,15 +93,15 @@ export class EvolutionByWeek {
 
 
   readonly caloriasSerie = computed(() =>
-    this.metrics().map(m => Number(m.calorias))
+    this.metrics().map((m: { calorias: any; }) => Number(m.calorias))
   );
 
   readonly distanciaSerie = computed(() =>
-    this.metrics().map(m => Number(m.distancia))
+    this.metrics().map((m: { distancia: any; }) => Number(m.distancia))
   );
 
   readonly velocidadSerie = computed(() =>
-    this.metrics().map(m => Number(m.velocidad_media))
+    this.metrics().map((m: { velocidad_media: any; }) => Number(m.velocidad_media))
   );
 
   readonly isChartReady = computed(() => {
