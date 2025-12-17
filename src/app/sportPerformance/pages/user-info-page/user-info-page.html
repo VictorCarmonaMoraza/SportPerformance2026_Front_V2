@@ -12,11 +12,11 @@
 
   <!-- Weekly Frequency -->
   <div class="rounded-xl p-3 bg-gradient-to-br from-teal-50 to-sky-500 shadow-lg">
-    <h2 class="text-gray-600 text-xl font-semibold text-stroke-black">Weekly Frequency</h2>
+    <h2 class="text-gray-600 text-xl font-semibold text-stroke-black">{{ title }}</h2>
 
     <div class="h-60 flex items-center justify-center text-white opacity-60">
       <!-- <app-evolution-graph [diasDelMes]="diasDelMes" /> -->
-      <app-evolution-by-week />
+      <app-evolution-by-week (titleChange)="title = $event" />
     </div>
   </div>
 

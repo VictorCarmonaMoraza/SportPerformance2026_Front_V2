@@ -10,16 +10,16 @@ import { RegisterResponse } from '../../interfaces/register-interface';
   providedIn: 'root',
 })
 export class AuthService {
-  private urlBase = environment.apiUrl;
+  private authUrl = `${environment.apiUrl}/auth`;
   readonly #http = inject(HttpClient)
 
   login(nameuser: string, password: string): Observable<LoginResponse.Login> {
-    return this.#http.post<LoginResponse.Login>(`${this.urlBase}/login`, { nameuser, password });
+    return this.#http.post<LoginResponse.Login>(`${this.authUrl}/login`, { nameuser, password });
   }
 
   //Register
   register(email: string, password: string, nameuser: string): Observable<RegisterResponse.Register> {
-    return this.#http.post<RegisterResponse.Register>(`${this.urlBase}/register`, {
+    return this.#http.post<RegisterResponse.Register>(`${this.authUrl}/register`, {
       email: email,
       password: password,
       nameuser: nameuser

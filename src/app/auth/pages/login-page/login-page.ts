@@ -47,7 +47,7 @@ export class LoginPage {
         localStorage.setItem('token', res.token);
         localStorage.setItem('user', JSON.stringify(res.usuario));
         //Navegamos a la ruta de la informacion del usaurio
-        this.router.navigate(['sport/user-sport']);
+        this.router.navigate(['sport/user-sport', res.usuario?.id]);
       },
       error: (err) => {
         console.error('❌ Error en login:', err);

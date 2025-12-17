@@ -1,7 +1,11 @@
-import { Component } from '@angular/core';
-import { Charts } from "../charts/charts";
-import * as echarts from 'echarts';
+import { Component, computed, effect, EventEmitter, inject, OnInit, output, Output } from '@angular/core';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
 import { EChartsOption } from 'echarts';
+import { map, NEVER, tap } from 'rxjs';
+import { MetricsService } from '../../services/metrics-service';
+import { SportService } from '../../services/sport-service';
+import { Charts } from "../charts/charts";
 
 @Component({
   selector: 'app-evolution-by-week',
@@ -11,227 +15,183 @@ import { EChartsOption } from 'echarts';
 })
 export class EvolutionByWeek {
 
-  diasSemana = [
-    'Lunes',
-    'Martes',
-    'Miércoles',
-    'Jueves',
-    'Viernes',
-    'Sábado',
-    'Domingo'
-  ];
+  metricsService = inject(MetricsService)
+  sportService = inject(SportService)
+  activatedRoute = inject(ActivatedRoute)
 
-  dataSerie = [34, 78, 12, 65, 90, 47, 23]
+  titleChange = output<string>();
 
-  option: EChartsOption = {
-    color: ['#80FFA5', '#00DDFF', '#37A2FF', '#FF0087', '#FFBF00'],
-    // title: {
-    //   // text: 'Gradient Stacked Area Chart'
-    // },
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'cross',
-        label: {
-          backgroundColor: '#6a7985'
+
+
+
+  id_user = toSignal(
+    this.activatedRoute.params.pipe(map(params => params['id']),
+      tap(id => console.log('ID desde ruta:', id))
+    )
+  )
+
+  infoUserResource = rxResource({
+    params: () => ({ id: this.id_user() }),
+    stream: ({ params }) => {
+      return this.sportService.getInfoUser(params.id);
+    }
+  })
+
+  //Desestructuramos la data para obtener el id y
+  // Resource dependiente
+  weekResource = rxResource({
+    params: () => {
+      const user = this.infoUserResource.value();
+      return user ? { id: user.deportista.id } : null;
+    },
+    stream: ({ params }) => {
+      if (!params) {
+        return NEVER;
+      }
+      return this.metricsService
+        .getMetricsLaskWeek(params.id)
+        .pipe(tap(response => console.log('La respuesta es:', response)));
+    }
+  });
+
+
+  readonly metrics = computed(() =>
+    this.weekResource.value()?.metrics ?? []
+  );
+
+  readonly daysOfWeek = computed(() =>
+    this.metrics().map(m => this.getWeekDay(m.fecha))
+  );
+
+  private getWeekDay(fecha: string): string {
+    return new Date(fecha).toLocaleDateString('en-GB', {
+      weekday: 'short'
+    });
+  }
+
+
+  constructor() {
+    effect(() => {
+      const user = this.infoUserResource.value();
+      const disciplina = user?.deportista?.disciplina_deportiva;
+
+      if (disciplina) {
+        this.titleChange.emit(disciplina.toString());
+      }
+
+      console.log('Información del deportista:', user);
+      console.log('Calorías:', this.caloriasSerie());
+      console.log('Distancia:', this.distanciaSerie());
+      console.log('Velocidad media:', this.velocidadSerie());
+      console.log('Días de la semana:', this.daysOfWeek());
+    });
+  }
+
+
+  readonly caloriasSerie = computed(() =>
+    this.metrics().map(m => Number(m.calorias))
+  );
+
+  readonly distanciaSerie = computed(() =>
+    this.metrics().map(m => Number(m.distancia))
+  );
+
+  readonly velocidadSerie = computed(() =>
+    this.metrics().map(m => Number(m.velocidad_media))
+  );
+
+  readonly isChartReady = computed(() => {
+    return (
+      this.weekResource.hasValue() &&
+      this.metrics().length > 0
+    );
+  });
+
+
+  /* ========= OPCIÓN ECHARTS (REACTIVA) ========= */
+  readonly option = computed<EChartsOption | null>(() => {
+    if (!this.isChartReady()) {
+      return null;
+    }
+
+    return {
+      tooltip: { trigger: 'item' },
+      legend: {
+        top: 1,
+        left: 'center',
+        data: ['Distancia (km)', 'Velocidad media (km/h)'],
+        icon: 'rect',
+        itemWidth: 14,
+        itemHeight: 14,
+        textStyle: {
+          color: '#2c3e50',
+          fontWeight: 'bold'
         }
-      }
-    },
-    legend: {
-      top: 2,
-      left: 'center',
-      icon: 'rect',
-      data: ['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5']
-    },
-    toolbox: {
-      feature: {
-        saveAsImage: {}
-      }
-    },
-    xAxis: [
-      {
+      },
+      grid: {
+        left: '3%',
+        right: '8%',
+        bottom: '7%',
+        containLabel: true
+      },
+      xAxis: {
         type: 'category',
         boundaryGap: false,
-        data: this.diasSemana,
+        data: this.daysOfWeek(),
         axisLabel: {
-          color: '#000',   // color del texto
-          fontSize: 12,
-          fontWeight: 'bold'
-        },
-        axisLine: {
-          lineStyle: {
-            color: '#000'  // color de la línea del eje
-          }
-        }
-      }
-    ],
-    yAxis: [
-      {
-        type: 'value',
-        axisLabel: {
-          color: '#000',   // color de los números
-          fontSize: 12,
-          fontWeight: 'bold'
-        },
-        axisLine: {
           show: true,
-          lineStyle: {
-            color: '#000'
-          }
-        },
-        splitLine: {
-          lineStyle: {
-            color: 'rgba(255,255,255,0.2)' // líneas horizontales suaves
-          }
+          color: '#000'
         }
       },
+      yAxis: [
+        {
+          type: 'value',
+          position: 'right',
+          axisLabel: {
+            color: '#2c3e50',
+            fontSize: 12,
+            fontWeight: 'bold'
+          },
+        },
+        {
+          type: 'value',
+          position: 'right',
+          offset: 60
+        }
+      ],
+      series: [
+        {
+          name: 'Distancia (km)',
+          type: 'line',
 
-    ],
-    series: [
-      {
-        name: 'Line 1',
-        type: 'line',
-        stack: 'Total',
-        smooth: true,
-        lineStyle: {
-          width: 1,
-          color: '#000'
+          data: this.distanciaSerie(),
+          lineStyle: {
+            color: '#E74C3C',
+            width: 3
+          },
+          itemStyle: {
+            color: '#E74C3C'
+          },
+          symbol: 'circle',
+          symbolSize: 6
         },
-        showSymbol: false,
-        areaStyle: {
-          opacity: 0.8,
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            {
-              offset: 0,
-              color: 'rgb(128, 255, 165)'
-            },
-            {
-              offset: 1,
-              color: 'rgb(1, 191, 236)'
-            }
-          ])
-        },
-        emphasis: {
-          focus: 'series'
-        },
-        data: [140, 232, 101, 264, 90, 340, 250]
-      },
-      {
-        name: 'Line 2',
-        type: 'line',
-        stack: 'Total',
-        smooth: true,
-        lineStyle: {
-          width: 1,
-          color: '#000'
-        },
-        showSymbol: false,
-        areaStyle: {
-          opacity: 0.8,
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            {
-              offset: 0,
-              color: 'rgb(0, 221, 255)'
-            },
-            {
-              offset: 1,
-              color: 'rgb(77, 119, 255)'
-            }
-          ])
-        },
-        emphasis: {
-          focus: 'series'
-        },
-        data: [120, 282, 111, 234, 220, 340, 310]
-      },
-      {
-        name: 'Line 3',
-        type: 'line',
-        stack: 'Total',
-        smooth: true,
-        lineStyle: {
-          width: 1,
-          color: '#000'
-        },
-        showSymbol: false,
-        areaStyle: {
-          opacity: 0.8,
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            {
-              offset: 0,
-              color: 'rgb(55, 162, 255)'
-            },
-            {
-              offset: 1,
-              color: 'rgb(116, 21, 219)'
-            }
-          ])
-        },
-        emphasis: {
-          focus: 'series'
-        },
-        data: [320, 132, 201, 334, 190, 130, 220]
-      },
-      {
-        name: 'Line 4',
-        type: 'line',
-        stack: 'Total',
-        smooth: true,
-        lineStyle: {
-          width: 1,
-          color: '#000'
-        },
-        showSymbol: false,
-        areaStyle: {
-          opacity: 0.8,
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            {
-              offset: 0,
-              color: 'rgb(255, 0, 135)'
-            },
-            {
-              offset: 1,
-              color: 'rgb(135, 0, 157)'
-            }
-          ])
-        },
-        emphasis: {
-          focus: 'series'
-        },
-        data: [220, 402, 231, 134, 190, 230, 120]
-      },
-      {
-        name: 'Line 5',
-        type: 'line',
-        stack: 'Total',
-        smooth: true,
-        lineStyle: {
-          width: 1,
-          color: '#000'
-        },
-        showSymbol: false,
-        label: {
-          show: true,
-          position: 'top'
-        },
-        areaStyle: {
-          opacity: 0.8,
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            {
-              offset: 0,
-              color: 'rgb(255, 191, 0)'
-            },
-            {
-              offset: 1,
-              color: 'rgb(224, 62, 76)'
-            }
-          ])
-        },
-        emphasis: {
-          focus: 'series'
-        },
-        data: [220, 302, 181, 234, 210, 290, 150]
-      }
-    ]
-  };
+        {
+          name: 'Velocidad media (km/h)',
+          type: 'line',
+          data: this.velocidadSerie(),
+          lineStyle: {
+            color: '#1E5EFF',
+            width: 3
+          },
+          itemStyle: {
+            color: '#1E5EFF'
+          },
+          symbol: 'circle',
+          symbolSize: 6
+        }
+      ]
+    };
+  });
+
+
 }

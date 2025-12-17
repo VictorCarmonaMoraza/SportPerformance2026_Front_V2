@@ -9,7 +9,7 @@ export const sportRoutes: Routes = [
     path: '',
     component: SportLayout,
     children: [
-      { path: 'user-sport', component: UserInfoPage },
+      { path: 'user-sport/:id', component: UserInfoPage },
       { path: 'user-metrics', component: UserMetricsPage },
       { path: '**', redirectTo: 'user-sport' }
     ]

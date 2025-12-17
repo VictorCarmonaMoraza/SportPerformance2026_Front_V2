@@ -10,5 +10,5 @@ import { EvolutionByYear } from "../../../shared/components/evolution-by-year/ev
   styleUrl: './user-info-page.css',
 })
 export class UserInfoPage {
-
+  title = '';
 }
