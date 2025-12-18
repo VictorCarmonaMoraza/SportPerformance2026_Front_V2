@@ -36,8 +36,22 @@
           {{ ultimasCalorias() }} Calorias
         </h3>
         <h1 class="text-4xl text-white mt-2 opacity-80 text-center">
-          {{ ultimaFecha() }}
+          {{ ultimaFecha() }} ultimo dia de entreno
         </h1>
+
+        <h1 class="text-4xl text-black mt-2 opacity-80 text-center">
+          {{ fechaActual() | date: 'yyyy/MM/dd' }}
+        </h1>
+        <h1 class="text-4xl mt-2 text-center opacity-80" [class.text-white]="diasSinEntrenar() === 0"
+          [class.text-red-500]="diasSinEntrenar() !== null && diasSinEntrenar()! > 0">
+          @if (diasSinEntrenar() === 0) {
+          Entrenaste hoy 💪
+          } @else if (diasSinEntrenar() !== null) {
+          {{ diasSinEntrenar() }} días sin entrenar
+          }
+        </h1>
+
+
       </div>
     </div>
 

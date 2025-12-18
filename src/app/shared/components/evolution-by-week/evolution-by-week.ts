@@ -58,9 +58,7 @@ export class EvolutionByWeek {
   );
 
   private getWeekDay(fecha: string): string {
-    return new Date(fecha).toLocaleDateString('en-GB', {
-      weekday: 'short'
-    });
+    return fecha;
   }
 
   constructor() {
