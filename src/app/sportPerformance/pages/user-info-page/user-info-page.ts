@@ -3,6 +3,7 @@ import { EvolutionByMonth } from "../../../shared/components/evolution-by-month/
 import { EvolutionByWeek } from "../../../shared/components/evolution-by-week/evolution-by-week";
 import { EvolutionByYear } from "../../../shared/components/evolution-by-year/evolution-by-year";
 import { SportService } from '../../../shared/services/sport-service';
+import { MetricsService } from '../../../shared/services/metrics-service';
 
 @Component({
   selector: 'app-user-info-page',
@@ -12,11 +13,16 @@ import { SportService } from '../../../shared/services/sport-service';
 })
 export class UserInfoPage {
   title = '';
-  peso = ''
-  calorias = ''
   private sportService = inject(SportService);
+  private metricsService = inject(MetricsService);
 
-  // 👉 recurso compartido
+
+  // 👉 métricas compartidas (ESTO VA AQUÍ)
+  ultimasCalorias = this.metricsService.ultimasCalorias;
+  ultimoPeso = this.metricsService.ultimoPeso;
+  ultimaFecha = this.metricsService.ultimaFecha;
+
+  // 👉 recurso compartidod
   readonly infoUserResource = this.sportService.infoUserResource;
 
   // 👉 derivado ya preparado
@@ -29,7 +35,9 @@ export class UserInfoPage {
       this.title = user.deportista.disciplina_deportiva;
       console.log('------>Info usuario:', user);
       console.log('------>Deportista:', user.deportista);
+      this.ultimasCalorias = this.metricsService.ultimasCalorias;
+      this.ultimoPeso = this.metricsService.ultimoPeso;
+      this.ultimaFecha = this.metricsService.ultimaFecha;
     });
   }
-
 }

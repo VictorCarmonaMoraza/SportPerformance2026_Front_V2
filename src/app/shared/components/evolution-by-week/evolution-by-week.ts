@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, output } from '@angular/core';
+import { Component, computed, effect, inject, output, signal } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { EChartsOption } from 'echarts';
@@ -18,6 +18,7 @@ export class EvolutionByWeek {
   metricsService = inject(MetricsService)
   sportService = inject(SportService)
   readonly infoUserResource = this.sportService.infoUserResource;
+
 
   //Rutas
   activatedRoute = inject(ActivatedRoute)
@@ -64,23 +65,41 @@ export class EvolutionByWeek {
 
   constructor() {
     effect(() => {
+      const metrics = this.metrics();
+      if (!metrics.length) return;
+
+      const ordered = [...metrics].sort(
+        (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
+      );
+
+      const last = ordered.at(-1);
+      if (!last) return;
+
+      if (last.fecha != null) {
+        this.metricsService.setUltimaFecha(last.fecha);
+      }
+
+      if (last.calorias != null) {
+        this.metricsService.setUltimasCalorias(Number(last.calorias));
+      }
+
+      if (last.peso != null) {
+        this.metricsService.setUltimoPeso(Number(last.peso));
+      }
+    });
+
+
+    effect(() => {
       const id = this.id_user();
       if (id) {
         this.sportService.setUserId(Number(id));
       }
     });
-
-    // effect(() => {
-    //   console.log('Calorías:', this.caloriasSerie());
-    //   console.log('Distancia:', this.distanciaSerie());
-    //   console.log('Velocidad media:', this.velocidadSerie());
-    //   console.log('Días de la semana:', this.daysOfWeek());
-    // });
   }
 
 
   readonly caloriasSerie = computed(() =>
-    this.metrics().map((m: { calorias: any; }) => Number(m.calorias))
+    this.metrics().map((m: { calorias: any; }) => Number(m.calorias)),
   );
 
   readonly distanciaSerie = computed(() =>
