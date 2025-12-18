@@ -1,26 +1,52 @@
-import { Component, ElementRef, input, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  ViewChild,
+  input,
+  AfterViewInit,
+  OnDestroy
+} from '@angular/core';
 import * as echarts from 'echarts';
 
 @Component({
   selector: 'app-charts',
-  imports: [],
   templateUrl: './charts.html',
   styleUrl: './charts.css',
 })
-export class Charts {
-  @ViewChild('chart') chartElement!: ElementRef<HTMLDivElement>;
+export class Charts implements AfterViewInit, OnDestroy {
 
-  // typeGraph = input.required<string>();
-  // data = input.required<string[]>();
-  // dataSerie = input.required<number[]>();
+  @ViewChild('chart', { static: true })
+  chartElement!: ElementRef<HTMLDivElement>;
+
   options = input.required<echarts.EChartsOption>();
 
+  private chart!: echarts.ECharts;
+  private resizeObserver!: ResizeObserver;
+
   ngAfterViewInit(): void {
+    const dom = this.chartElement.nativeElement;
 
-    // 1. Initialize ECharts using the ViewChild reference
-    const chartDom = this.chartElement.nativeElement;
-    const myChart = echarts.init(chartDom);
+    this.chart = echarts.init(dom);
 
-    myChart.setOption(this.options())
+    this.chart.setOption(this.options(), {
+      notMerge: true,
+      lazyUpdate: false
+    });
+
+    // 🔥 OBSERVA CAMBIOS REALES DE TAMAÑO
+    this.resizeObserver = new ResizeObserver(() => {
+      this.chart.resize({
+        width: 'auto',
+        height: 'auto',
+        animation: { duration: 300 }
+      });
+    });
+
+    this.resizeObserver.observe(dom);
+  }
+
+  ngOnDestroy(): void {
+    this.resizeObserver?.disconnect();
+    this.chart?.dispose();
   }
 }

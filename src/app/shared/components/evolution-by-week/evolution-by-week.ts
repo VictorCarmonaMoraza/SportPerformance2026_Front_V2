@@ -126,8 +126,9 @@ export class EvolutionByWeek {
 
     return {
       tooltip: { trigger: 'item' },
+
       legend: {
-        top: 1,
+        top: 8,
         left: 'center',
         data: ['Distancia (km)', 'Velocidad media (km/h)'],
         icon: 'rect',
@@ -138,42 +139,51 @@ export class EvolutionByWeek {
           fontWeight: 'bold'
         }
       },
+
       grid: {
-        left: '3%',
-        right: '8%',
-        bottom: '7%',
-        containLabel: true
+        top: 48,
+        bottom: 36,
+        left: 24,
+        right: 40,
+        containLabel: false // 🔥 CLAVE ABSOLUTA
       },
+
       xAxis: {
         type: 'category',
         boundaryGap: false,
         data: this.daysOfWeek(),
+        axisLine: { show: false },
+        axisTick: { show: false },
         axisLabel: {
-          show: true,
-          color: '#000'
+          color: '#2c3e50',
+          margin: 14
         }
       },
+
       yAxis: [
         {
           type: 'value',
           position: 'right',
+          axisLine: { show: false },
+          axisTick: { show: false },
           axisLabel: {
             color: '#2c3e50',
             fontSize: 12,
-            fontWeight: 'bold'
+            fontWeight: 'bold',
+            margin: 10
           },
-        },
-        {
-          type: 'value',
-          position: 'right',
-          offset: 60
+          splitLine: {
+            lineStyle: {
+              color: 'rgba(0,0,0,0.08)'
+            }
+          }
         }
       ],
+
       series: [
         {
           name: 'Distancia (km)',
           type: 'line',
-
           data: this.distanciaSerie(),
           lineStyle: {
             color: '#E74C3C',
@@ -201,6 +211,7 @@ export class EvolutionByWeek {
         }
       ]
     };
+
   });
 
 

@@ -1,6 +1,12 @@
-<div class="flex justify-center items-center">
-  <!-- <app-chart [typeGraph]="'line'" [data]="diasSemana" [dataSerie]="dataSerie" /> -->
+<div class="h-90">
   @if(metrics().length){
   <app-charts [options]="option()!" />
   }
 </div>
+
+
+<!-- <div class="flex flex-col flex-1 min-h-0">
+  @if(metrics().length){
+  <app-charts [options]="option()!" />
+  }
+</div> -->
