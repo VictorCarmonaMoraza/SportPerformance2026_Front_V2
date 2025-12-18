@@ -1,8 +1,9 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { NEVER, Observable } from 'rxjs';
 import { MetricsApi } from '../interfaces/metrics-interface';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -33,4 +34,52 @@ export class MetricsService {
       `${this.metricUrl}/getlastWeek/${deportista_id}`
     );
   }
+
+  //Parte anual
+
+  /* ===============================
+  * ID COMPARTIDO DEL DEPORTISTA
+  * =============================== */
+  private readonly deportistaId = signal<number | null>(null);
+
+  setDeportistaId(id: number) {
+    this.deportistaId.set(id);
+  }
+
+  /* ===============================
+   * MÉTRICAS ANUALES (API)
+   * =============================== */
+  private getMetricsLastYear(deportistaId: number) {
+    return this.#http.get<MetricsApi.MetricsResponse>(
+      `${this.metricUrl}/lastYear/${deportistaId}`
+    );
+  }
+
+  /* ===============================
+   * RESOURCE ANUAL
+   * =============================== */
+  readonly yearMetricsResource = rxResource({
+    params: () => {
+      const id = this.deportistaId();
+      return id ? { id } : null;
+    },
+    stream: ({ params }) => {
+      if (!params) return NEVER;
+      return this.getMetricsLastYear(params.id);
+    }
+  });
+
+  /* ===============================
+   * SELECTOR REACTIVO (✔ SIGNAL REAL)
+   * =============================== */
+  readonly yearMetrics = computed(() =>
+    this.yearMetricsResource.value()?.metrics ?? []
+  );
 }
+
+
+
+
+
+
+

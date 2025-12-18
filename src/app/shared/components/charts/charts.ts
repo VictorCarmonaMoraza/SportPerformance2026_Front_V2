@@ -4,7 +4,8 @@ import {
   ViewChild,
   input,
   AfterViewInit,
-  OnDestroy
+  OnDestroy,
+  effect
 } from '@angular/core';
 import * as echarts from 'echarts';
 
@@ -22,6 +23,16 @@ export class Charts implements AfterViewInit, OnDestroy {
 
   private chart!: echarts.ECharts;
   private resizeObserver!: ResizeObserver;
+
+  constructor() {
+    effect(() => {
+      const option = this.options();
+      if (!this.chart || !option) return;
+
+      this.chart.setOption(option, { notMerge: true });
+      this.chart.resize();
+    });
+  }
 
   ngAfterViewInit(): void {
     const dom = this.chartElement.nativeElement;
