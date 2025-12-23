@@ -17,7 +17,7 @@ export class AuthService {
   //Nuevo
   private _authStatus = signal<AuthStatus>('checking');
 
-  private _user = signal<Usuario | null>(null);
+  _user = signal<Usuario | null>(null);
   private _token = signal<string | null>(null);
 
   authStatus = computed<AuthStatus>(() => {
@@ -34,7 +34,7 @@ export class AuthService {
   toke = computed(this._token);
 
 
-  //Fin nuevo
+
 
   login(nameuser: string, password: string): Observable<boolean> {
     return this.#http.post<LoginResponse>(`${this.authUrl}/login`, { nameuser, password })
@@ -56,6 +56,8 @@ export class AuthService {
         })
       );
   }
+
+  //Fin nuevo
 
   //Register
   register(email: string, password: string, nameuser: string): Observable<RegisterResponse> {

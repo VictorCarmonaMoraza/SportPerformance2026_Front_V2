@@ -22,6 +22,7 @@
   </div>
 
   <div class="navbar-end">
-    <a class="btn btn-secondary" (click)="exit()">Logout</a>
+    <button class="btn btn-ghost">{{authService._user()?.nameuser}}</button>
+    <button class="btn btn-error" (click)="exit()">Logout</button>
   </div>
 </div>

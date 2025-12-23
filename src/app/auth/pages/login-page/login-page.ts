@@ -41,7 +41,11 @@ export class LoginPage {
 
     this.#authService.login(username!, password!).subscribe((isAuthenticated) => {
       if (isAuthenticated) {
-        this.router.navigateByUrl('/sport');
+        this.router.navigate([
+          '/sport/user-sport',
+          this.#authService._user()?.id
+        ]);
+
         return;
       }
       this.hasError.set(true);

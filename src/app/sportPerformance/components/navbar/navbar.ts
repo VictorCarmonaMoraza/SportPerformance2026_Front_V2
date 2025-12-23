@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterModule } from '@angular/router';
 import { filter, map, tap } from 'rxjs';
+import { AuthService } from '../../../auth/authentication/service/auth-service';
 
 @Component({
   selector: 'app-navbar',
@@ -13,6 +14,7 @@ export class Navbar {
   // router = inject(Router);
   readonly router = inject(Router);
   activatedRoute = inject(ActivatedRoute);
+  authService = inject(AuthService);
 
   exit() {
     //Limpiamos localstorage
