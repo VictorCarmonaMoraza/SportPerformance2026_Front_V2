@@ -9,22 +9,7 @@ export const routes: Routes = [
   {
     path: 'auth',
     loadChildren: () => import('./auth/auth.routes'),
-    //TODO: Guards
-    // canMatch: [
-    //   notAuthenticatedGuard,
-    //   () => {
-    //     console.log('Estamos en los guard')
-    //   }
-    // ]
   },
-  // {
-  //   path: 'admin',
-  //   // loadChildren: () => import('./admin-dashboard/admin-dashboard.routes')
-  // },
-  // {
-  //   path: '',
-  //   // loadChildren: () => import('./store-front/store-front.routes')
-  // }
   {
     path: 'sport',
     loadChildren: () => import('./sportPerformance/sport.routes')

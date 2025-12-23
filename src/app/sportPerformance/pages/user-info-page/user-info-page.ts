@@ -33,12 +33,6 @@ export class UserInfoPage {
   readonly infoUserResource = this.sportService.infoUserResource;
   readonly deportista = this.sportService.deportista;
 
-
-  ngOnInit(): void {
-    console.log('infoUserResource:', this.infoUserResource.value());
-    console.log('deportista:', this.deportista());
-  }
-
   constructor() {
     effect(() => {
       const user = this.infoUserResource.value();

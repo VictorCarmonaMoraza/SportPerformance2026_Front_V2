@@ -34,7 +34,6 @@ export class RegisterPage {
     }
     //Si todo va bien
     const { email = '', password = '', fullName = '' } = this.registerForm.value;
-    console.log({ email, password, fullName });
     this.authService.register(email!, password!, fullName!).subscribe((isAuthenticated) => {
       if (isAuthenticated) {
         this.isCreateOK.set(true);

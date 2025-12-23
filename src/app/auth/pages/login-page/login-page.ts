@@ -35,29 +35,24 @@ export class LoginPage {
 
     //Si todo va bien
     const { username = '', password = '' } = this.loginForm.value;
-    console.log({ username, password })
 
     this.loading.set(true);
     this.errorMessage.set('');
 
-
     this.#authService.login(username!, password!).subscribe({
       next: (res) => {
-        console.log('✅ Login correcto:', res);
         localStorage.setItem('token', res.token);
         localStorage.setItem('user', JSON.stringify(res.usuario));
         //Navegamos a la ruta de la informacion del usaurio
         this.router.navigate(['sport/user-sport', res.usuario?.id]);
       },
       error: (err) => {
-        console.error('❌ Error en login:', err);
         this.mostrarErrorTemporal(err.error?.error || 'Error al iniciar sesión');
         this.loading.set(false);
       },
       complete: () => this.loading.set(false)
     });
   }
-
 
   private mostrarErrorTemporal(msgError: string) {
     this.errorMessage.set(msgError);
