@@ -41,10 +41,10 @@ export class LoginPage {
 
     this.#authService.login(username!, password!).subscribe({
       next: (res) => {
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('user', JSON.stringify(res.usuario));
+        // localStorage.setItem('token', res.token);
+        // localStorage.setItem('user', JSON.stringify(res.user));
         //Navegamos a la ruta de la informacion del usaurio
-        this.router.navigate(['sport/user-sport', res.usuario?.id]);
+        this.router.navigate(['sport/user-sport', res.user?.id]);
       },
       error: (err) => {
         this.mostrarErrorTemporal(err.error?.error || 'Error al iniciar sesión');

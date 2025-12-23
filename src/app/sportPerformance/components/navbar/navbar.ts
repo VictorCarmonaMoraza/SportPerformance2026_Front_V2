@@ -1,5 +1,7 @@
 import { Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterModule } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterModule } from '@angular/router';
+import { filter, map, tap } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -8,7 +10,9 @@ import { Router, RouterLink, RouterModule } from '@angular/router';
   styleUrl: './navbar.css',
 })
 export class Navbar {
-  router = inject(Router);
+  // router = inject(Router);
+  readonly router = inject(Router);
+  activatedRoute = inject(ActivatedRoute);
 
   exit() {
     //Limpiamos localstorage
@@ -16,4 +20,20 @@ export class Navbar {
     localStorage.removeItem('user');
     this.router.navigate(['/auth/login']);
   }
+
+  //Este fragmento convierte los parámetros de la ruta en una Signal de Angular.
+  // ✅ SIEMPRE obtiene el id, aunque la ruta cambie
+  idRuta = toSignal(
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd),
+      map(() => {
+        let current = this.activatedRoute.root;
+        while (current.firstChild) {
+          current = current.firstChild;
+        }
+        return Number(current.snapshot.paramMap.get('id'));
+      })
+    ),
+    { initialValue: null }
+  );
 }

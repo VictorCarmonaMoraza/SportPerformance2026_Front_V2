@@ -5,6 +5,9 @@ import { EvolutionByYear } from "../../../shared/components/evolution-by-year/ev
 import { InfoUserProfile } from "../../../shared/components/info-user-profile/info-user-profile";
 import { MetricsService } from '../../../shared/services/metrics-service';
 import { SportService } from '../../../shared/services/sport-service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map, tap } from 'rxjs';
 
 @Component({
   selector: 'app-user-info-page',
@@ -16,6 +19,8 @@ export class UserInfoPage {
 
   private readonly sportService = inject(SportService);
   private readonly metricsService = inject(MetricsService);
+
+
 
   title = '';
 
@@ -54,4 +59,6 @@ export class UserInfoPage {
 
     return Math.floor(diffMs / (1000 * 60 * 60 * 24));
   });
+
+
 }
