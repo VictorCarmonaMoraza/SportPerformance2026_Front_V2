@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { catchError, map, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment.development';
 import { LoginResponse, Usuario } from '../../interfaces/auth-interface';
 import { RegisterResponse } from '../../interfaces/register-interface';
@@ -36,7 +36,7 @@ export class AuthService {
 
   //Fin nuevo
 
-  login(nameuser: string, password: string) {
+  login(nameuser: string, password: string): Observable<boolean> {
     return this.#http.post<LoginResponse>(`${this.authUrl}/login`, { nameuser, password })
       .pipe(
         tap(resp => {
@@ -46,9 +46,15 @@ export class AuthService {
 
           //Grabar token en localStorage
           localStorage.setItem('token', resp.token);
+        }),
+        map(() => true),
+        catchError((error: any) => {
+          this._user.set(null);
+          this._token.set(null);
+          this._authStatus.set('not-authenticated')
+          return of(false);
         })
-      )
-
+      );
   }
 
   //Register

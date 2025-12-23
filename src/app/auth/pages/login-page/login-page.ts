@@ -39,20 +39,17 @@ export class LoginPage {
     this.loading.set(true);
     this.errorMessage.set('');
 
-    this.#authService.login(username!, password!).subscribe({
-      next: (res) => {
-        // localStorage.setItem('token', res.token);
-        // localStorage.setItem('user', JSON.stringify(res.user));
-        //Navegamos a la ruta de la informacion del usaurio
-        this.router.navigate(['sport/user-sport', res.user?.id]);
-      },
-      error: (err) => {
-        this.mostrarErrorTemporal(err.error?.error || 'Error al iniciar sesión');
-        this.loading.set(false);
-      },
-      complete: () => this.loading.set(false)
+    this.#authService.login(username!, password!).subscribe((isAuthenticated) => {
+      if (isAuthenticated) {
+        this.router.navigateByUrl('/sport');
+        return;
+      }
+      this.hasError.set(true);
+      setTimeout(() => this.hasError.set(false), 2000);
     });
   }
+
+
 
   private mostrarErrorTemporal(msgError: string) {
     this.errorMessage.set(msgError);
