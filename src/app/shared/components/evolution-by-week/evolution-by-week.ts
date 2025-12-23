@@ -18,8 +18,6 @@ export class EvolutionByWeek {
   metricsService = inject(MetricsService)
   sportService = inject(SportService)
   readonly infoUserResource = this.sportService.infoUserResource;
-
-
   //Rutas
   activatedRoute = inject(ActivatedRoute)
 
@@ -121,10 +119,8 @@ export class EvolutionByWeek {
     if (!this.isChartReady()) {
       return null;
     }
-
     return {
       tooltip: { trigger: 'item' },
-
       legend: {
         top: 8,
         left: 'center',
@@ -137,15 +133,13 @@ export class EvolutionByWeek {
           fontWeight: 'bold'
         }
       },
-
       grid: {
         top: 48,
         bottom: 36,
         left: 24,
         right: 40,
-        containLabel: false // 🔥 CLAVE ABSOLUTA
+        containLabel: false
       },
-
       xAxis: {
         type: 'category',
         boundaryGap: false,
@@ -157,7 +151,6 @@ export class EvolutionByWeek {
           margin: 14
         }
       },
-
       yAxis: [
         {
           type: 'value',
@@ -177,7 +170,6 @@ export class EvolutionByWeek {
           }
         }
       ],
-
       series: [
         {
           name: 'Distancia (km)',
@@ -209,7 +201,6 @@ export class EvolutionByWeek {
         }
       ]
     };
-
   });
 
 
