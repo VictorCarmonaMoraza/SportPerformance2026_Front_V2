@@ -10,15 +10,11 @@ import { AuthService } from '../../authentication/service/auth-service';
   styleUrl: './login-page.css',
 })
 export class LoginPage {
-
   readonly #authService = inject(AuthService);
   hasError = signal(false);
   readonly router = inject(Router);
   readonly fb = inject(FormBuilder);
 
-
-  loading = signal(false);
-  errorMessage = signal('');
 
   loginForm: FormGroup = this.fb.group({
     username: ['', [Validators.required]],
@@ -36,27 +32,16 @@ export class LoginPage {
     //Si todo va bien
     const { username = '', password = '' } = this.loginForm.value;
 
-    this.loading.set(true);
-    this.errorMessage.set('');
-
     this.#authService.login(username!, password!).subscribe((isAuthenticated) => {
       if (isAuthenticated) {
         this.router.navigate([
           '/sport/user-sport',
           this.#authService._user()?.id
         ]);
-
         return;
       }
       this.hasError.set(true);
       setTimeout(() => this.hasError.set(false), 2000);
     });
-  }
-
-
-
-  private mostrarErrorTemporal(msgError: string) {
-    this.errorMessage.set(msgError);
-    setTimeout(() => this.errorMessage.set(''), 4000);
   }
 }

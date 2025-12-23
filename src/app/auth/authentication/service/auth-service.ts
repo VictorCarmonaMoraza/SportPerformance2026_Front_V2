@@ -34,8 +34,6 @@ export class AuthService {
   toke = computed(this._token);
 
 
-
-
   login(nameuser: string, password: string): Observable<boolean> {
     return this.#http.post<LoginResponse>(`${this.authUrl}/login`, { nameuser, password })
       .pipe(
@@ -57,8 +55,6 @@ export class AuthService {
       );
   }
 
-  //Fin nuevo
-
   //Register
   register(email: string, password: string, nameuser: string): Observable<RegisterResponse> {
     return this.#http.post<RegisterResponse>(`${this.authUrl}/register`, {
@@ -66,17 +62,7 @@ export class AuthService {
       password: password,
       nameuser: nameuser
     })
-    //.pipe(
-    //   map((resp) => this.handleAuthSuccess(resp)),
-    //   // map(() => true),
-    //   //Cualquier estado que no sea 200 cae aquí
-    //   catchError((error: any) => this.handleAuthError(error))
-    // );
   }
-
-
-  //Fin register
-
 
 
   logout() {
