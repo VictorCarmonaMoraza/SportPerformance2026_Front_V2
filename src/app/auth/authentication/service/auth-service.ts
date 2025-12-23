@@ -1,9 +1,9 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment.development';
-import { RegisterResponse } from '../../interfaces/register-interface';
 import { LoginResponse, Usuario } from '../../interfaces/auth-interface';
+import { RegisterResponse } from '../../interfaces/register-interface';
 
 type AuthStatus = 'checking' | 'authenticated' | 'not-authenticated';
 
@@ -52,8 +52,8 @@ export class AuthService {
   }
 
   //Register
-  register(email: string, password: string, nameuser: string): Observable<RegisterResponse.Register> {
-    return this.#http.post<RegisterResponse.Register>(`${this.authUrl}/register`, {
+  register(email: string, password: string, nameuser: string): Observable<RegisterResponse> {
+    return this.#http.post<RegisterResponse>(`${this.authUrl}/register`, {
       email: email,
       password: password,
       nameuser: nameuser

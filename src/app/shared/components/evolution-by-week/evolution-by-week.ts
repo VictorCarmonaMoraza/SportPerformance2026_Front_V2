@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, output, signal } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { EChartsOption } from 'echarts';
