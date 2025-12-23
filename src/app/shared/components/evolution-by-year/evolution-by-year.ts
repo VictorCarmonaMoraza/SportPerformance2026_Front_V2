@@ -95,6 +95,13 @@ export class EvolutionByYear {
       top: 0,
       data: ['Calorías', 'Distancia media']
     },
+    grid: {
+      top: 48,
+      bottom: 36,
+      left: 24,
+      right: 40,
+      containLabel: false // 🔥 CLAVE ABSOLUTA
+    },
 
     xAxis: {
       type: 'category',

@@ -1,14 +1,14 @@
+import { DatePipe } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { EvolutionByMonth } from "../../../shared/components/evolution-by-month/evolution-by-month";
 import { EvolutionByWeek } from "../../../shared/components/evolution-by-week/evolution-by-week";
 import { EvolutionByYear } from "../../../shared/components/evolution-by-year/evolution-by-year";
-import { SportService } from '../../../shared/services/sport-service';
+import { InfoUserProfile } from "../../../shared/components/info-user-profile/info-user-profile";
 import { MetricsService } from '../../../shared/services/metrics-service';
-import { DatePipe } from '@angular/common';
+import { SportService } from '../../../shared/services/sport-service';
 
 @Component({
   selector: 'app-user-info-page',
-  imports: [EvolutionByMonth, EvolutionByWeek, EvolutionByYear, DatePipe],
+  imports: [EvolutionByWeek, EvolutionByYear, DatePipe, InfoUserProfile],
   templateUrl: './user-info-page.html',
   styleUrl: './user-info-page.css',
 })
@@ -32,6 +32,12 @@ export class UserInfoPage {
   /* ===== Recursos ===== */
   readonly infoUserResource = this.sportService.infoUserResource;
   readonly deportista = this.sportService.deportista;
+
+
+  ngOnInit(): void {
+    console.log('infoUserResource:', this.infoUserResource.value());
+    console.log('deportista:', this.deportista());
+  }
 
   constructor() {
     effect(() => {

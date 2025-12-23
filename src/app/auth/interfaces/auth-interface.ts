@@ -23,6 +23,8 @@ export namespace LoginResponse {
     id: number;
     nameuser: string;
     rol: string;
+    tiene_foto: boolean;
+    foto_url: string;
   }
 
 }

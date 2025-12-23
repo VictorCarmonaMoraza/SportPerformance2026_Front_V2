@@ -1,0 +1,54 @@
+<div class="card">
+  <div class="card-body">
+
+    <div class="profile-container">
+
+      <!-- COLUMNA IZQUIERDA: FORM -->
+      <div class="profile-form-container">
+        <form [formGroup]="form" class="profile-form">
+
+          <div class="row">
+            <div class="col">
+              <label>Nombre</label>
+              <input type="text" class="input input-md" formControlName="nombre" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <label>Edad</label>
+              <input type="text" class="input input-md" formControlName="edad" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <label>Disciplina</label>
+              <input type="text" class="input input-md" formControlName="disciplina" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <label>Nacionalidad</label>
+              <input type="text" class="input input-md" formControlName="nacionalidad" />
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- COLUMNA DERECHA: FOTO -->
+      <div class="profile-photo-container">
+        @if (userPhotoResource.value()) {
+        <img [src]="photoSrc()" alt="Foto de perfil" class="profile-photo" />
+        }
+        @else {
+        <img src="assets/images/no-image.jpg" alt="Avatar por defecto" class="profile-photo" />
+        }
+      </div>
+
+
+    </div>
+  </div>
+</div>
