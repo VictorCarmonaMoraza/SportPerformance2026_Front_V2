@@ -11,65 +11,101 @@ import { MetricsService } from '../../services/metrics-service';
 })
 export class EvolutionByYear {
 
-  private metricsService = inject(MetricsService);
+  private readonly metricsService = inject(MetricsService);
 
   /* ===============================
-   * Datos del resource anual
+   * MÉTRICAS ANUALES (RESOURCE)
    * =============================== */
   readonly metrics = this.metricsService.yearMetrics;
 
-  readonly months = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-  ];
-
   /* ===============================
-   * Calorías TOTALES por mes
+   * ÚLTIMA FECHA DISPONIBLE
    * =============================== */
-  readonly caloriesByMonth = computed(() => {
-    const map = new Map<number, number>();
+  readonly lastDate = computed<Date | null>(() => {
+    const data = this.metrics();
+    if (!data.length) return null;
 
-    for (const m of this.metrics()) {
-      const month = new Date(m.fecha).getMonth();
-      map.set(month, (map.get(month) ?? 0) + Number(m.calorias));
-    }
-
-    return map;
+    return data
+      .map(m => new Date(m.fecha))
+      .sort((a, b) => b.getTime() - a.getTime())[0];
   });
 
-  readonly caloriesSerie = computed<(number | null)[]>(() =>
-    Array.from({ length: 12 }, (_, month) =>
-      this.caloriesByMonth().get(month) ?? null
+  /* ===============================
+   * VENTANA DE 12 MESES DESLIZANTE
+   * =============================== */
+  readonly monthsWindow = computed(() => {
+    const last = this.lastDate();
+    if (!last) return [];
+
+    const months: { year: number; month: number; label: string }[] = [];
+
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(last.getFullYear(), last.getMonth() - i, 1);
+
+      months.push({
+        year: d.getFullYear(),
+        month: d.getMonth(),
+        label: d.toLocaleDateString('es-ES', {
+          month: 'long',
+          year: 'numeric',
+        }),
+      });
+    }
+
+    return months;
+  });
+
+  /* ===============================
+   * CALORÍAS TOTALES POR MES
+   * =============================== */
+  readonly caloriesSerie = computed<(number | null)[]>(() => {
+    const metrics = this.metrics();
+
+    return this.monthsWindow().map(w => {
+      const monthData = metrics.filter(m => {
+        const d = new Date(m.fecha);
+        return d.getFullYear() === w.year && d.getMonth() === w.month;
+      });
+
+      if (!monthData.length) return null;
+
+      return monthData.reduce(
+        (sum, m) => sum + Number(m.calorias ?? 0),
+        0
+      );
+    });
+  });
+
+  /* ===============================
+   * DISTANCIA MEDIA POR MES
+   * =============================== */
+  readonly distanceAvgSerie = computed<(number | null)[]>(() => {
+    const metrics = this.metrics();
+
+    return this.monthsWindow().map(w => {
+      const monthData = metrics.filter(m => {
+        const d = new Date(m.fecha);
+        return d.getFullYear() === w.year && d.getMonth() === w.month;
+      });
+
+      if (!monthData.length) return null;
+
+      const total = monthData.reduce(
+        (sum, m) => sum + Number(m.distancia ?? 0),
+        0
+      );
+
+      return Number((total / monthData.length).toFixed(2));
+    });
+  });
+
+  /* ===============================
+   * ETIQUETAS DEL EJE X
+   * =============================== */
+  readonly xAxisLabels = computed(() =>
+    this.monthsWindow().map(m =>
+      m.label.charAt(0).toUpperCase() + m.label.slice(1)
     )
-  );
-
-  /* ===============================
-   * Distancia MEDIA por sesión (km)
-   * =============================== */
-  readonly distanceStatsByMonth = computed(() => {
-    const map = new Map<number, { total: number; count: number }>();
-
-    for (const m of this.metrics()) {
-      const month = new Date(m.fecha).getMonth();
-      const km = Number(m.distancia);
-
-      if (!map.has(month)) {
-        map.set(month, { total: 0, count: 0 });
-      }
-
-      const entry = map.get(month)!;
-      entry.total += km;
-      entry.count += 1;
-    }
-
-    return map;
-  });
-
-  readonly distanceAvgSerie = computed<(number | null)[]>(() =>
-    Array.from({ length: 12 }, (_, month) => {
-      const stat = this.distanceStatsByMonth().get(month);
-      return stat ? Number((stat.total / stat.count).toFixed(2)) : null;
-    })
   );
 
   /* ===============================
@@ -88,44 +124,42 @@ export class EvolutionByYear {
               : `${p.marker} ${p.seriesName}: ${p.value} kcal`
           )
           .join('<br/>');
-      }
+      },
     },
 
     legend: {
       top: 0,
-      data: ['Calorías', 'Distancia media']
+      data: ['Calorías', 'Distancia media'],
     },
+
     grid: {
       top: 48,
-      bottom: 36,
-      left: 24,
-      right: 40,
-      containLabel: false // 🔥 CLAVE ABSOLUTA
+      bottom: 50,
+      left: 32,
+      right: 48,
     },
 
     xAxis: {
       type: 'category',
-      data: this.months,
-      axisLabel: { rotate: 45 }
+      data: this.xAxisLabels(),
+      axisLabel: { rotate: 45 },
     },
 
     yAxis: [
       {
         type: 'value',
         name: 'Calorías',
-        position: 'left',
         axisLabel: { formatter: '{value} kcal' },
         splitLine: {
           show: true,
-          lineStyle: { color: '#333' }
-        }
+          lineStyle: { color: '#333' },
+        },
       },
       {
         type: 'value',
         name: 'Distancia media (km)',
-        position: 'right',
-        axisLabel: { formatter: '{value} km' }
-      }
+        axisLabel: { formatter: '{value} km' },
+      },
     ],
 
     series: [
@@ -133,7 +167,7 @@ export class EvolutionByYear {
         name: 'Calorías',
         type: 'bar',
         data: this.caloriesSerie(),
-        itemStyle: { color: '#1E90FF' }
+        itemStyle: { color: '#1E90FF' },
       },
       {
         name: 'Distancia media',
@@ -146,9 +180,9 @@ export class EvolutionByYear {
         symbolSize: 6,
         lineStyle: {
           width: 3,
-          color: '#2ECC71'
-        }
-      }
-    ]
+          color: '#2ECC71',
+        },
+      },
+    ],
   }));
 }
