@@ -1,12 +1,15 @@
+@if (weekResource.hasValue()) {
 <div class="h-[360px]">
-  @if(metrics().length){
+  @if (metrics().length) {
   <app-charts [options]="option()!" />
+  } @else {
+  <p class="text-center text-gray-500 mt-4">
+    No hay datos disponibles para esta semana
+  </p>
   }
 </div>
-
-
-<!-- <div class="flex flex-col flex-1 min-h-0">
-  @if(metrics().length){
-  <app-charts [options]="option()!" />
-  }
-</div> -->
+} @else {
+<p class="text-center text-gray-400 mt-4">
+  {{errorMessage()}}
+</p>
+}

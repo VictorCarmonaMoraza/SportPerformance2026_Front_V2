@@ -1,27 +1,40 @@
-<div class="flex items-center justify-center w-full">
-  <label for="dropzone-file"
-    class="flex flex-col items-center justify-center w-full h-64 bg-neutral-secondary-medium border border-dashed border-default-strong rounded-base cursor-pointer hover:bg-neutral-tertiary-medium">
+<div class="upload-card">
 
-    <div class="flex flex-col items-center justify-center text-body pt-5 pb-6">
-      <svg class="w-8 h-8 mb-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <div class="upload-header">
+    <span class="upload-icon">📄</span>
+    <h3>Cargar métricas deportivas</h3>
+    <p>Selecciona un archivo XLS, XLSX, CSV o XML</p>
+  </div>
 
-        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h3a3 3 0 0 0 0-6h-.025
-       a5.5 5.5 0 0 0 .025-.5
-       A5.5 5.5 0 0 0 7.207 9.021
-       C7.137 9.017 7.071 9 7 9
-       a4 4 0 1 0 0 8h2.167
-       M12 19v-9
-       m0 0-2 2
-       m2-2 2 2" />
-      </svg>
+  <!-- INPUT FILE OCULTO -->
+  <input type="file" id="fileInput" accept=".xls,.xlsx,.csv,.xml" (change)="onFileSelected($event)" hidden #fileInput />
 
-      <p class="mb-2 text-sm">
-        <span class="font-semibold">Click to upload</span> or drag and drop
-      </p>
-      <p class="text-xs">XLS, CSV o XML</p>
-    </div>
-
-    <input id="dropzone-file" type="file" class="hidden" accept=".xls,.xlsx,.csv,.xml"
-      (change)="onFileSelected($event)" />
+  <!-- BOTÓN SELECCIONAR -->
+  <label for="fileInput" class="btn-select">
+    Seleccionar archivo
   </label>
+
+  <!-- INFO ARCHIVO -->
+  @if (selectedFile; as file) {
+  <div class="file-info">
+    <span class="file-icon">📊</span>
+    <span class="file-name">{{ selectedFile.name }}</span>
+    <span class="file-size">
+      {{ selectedFile.size / 1024 | number:'1.0-0' }} KB
+    </span>
+  </div>
+  }
+
+  <!-- ERROR -->
+  @if (errorMessage) {
+  <p class="error">
+    {{ errorMessage }}
+  </p>
+  }
+
+  <!-- BOTÓN SUBIR -->
+  <button class="btn-upload" (click)="upload()" [disabled]="!selectedFile">
+    Subir archivo
+  </button>
+
 </div>

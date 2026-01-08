@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { EChartsOption } from 'echarts';
@@ -20,6 +20,7 @@ export class EvolutionByWeek {
   readonly infoUserResource = this.sportService.infoUserResource;
   //Rutas
   activatedRoute = inject(ActivatedRoute)
+  errorMessage = signal<string>('');
 
   id_user = toSignal(
     this.activatedRoute.params.pipe(map(params => params['id']),
@@ -40,7 +41,9 @@ export class EvolutionByWeek {
       }
       return this.metricsService
         .getMetricsLaskWeek(params.id)
-        .pipe(tap(response => console.log('La respuesta es:', response)));
+        .pipe(tap(response => console.log('La respuesta es:', response.message)),
+          tap(response => this.errorMessage.set(response.message))
+        );
     }
   });
 
@@ -60,29 +63,29 @@ export class EvolutionByWeek {
   }
 
   constructor() {
-    effect(() => {
-      const metrics = this.metrics();
-      if (!metrics.length) return;
+    // effect(() => {
+    //   const metrics = this.metrics();
+    //   if (!metrics.length) return;
 
-      const ordered = [...metrics].sort(
-        (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
-      );
+    //   const ordered = [...metrics].sort(
+    //     (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
+    //   );
 
-      const last = ordered.at(-1);
-      if (!last) return;
+    //   const last = ordered.at(-1);
+    //   if (!last) return;
 
-      if (last.fecha != null) {
-        this.metricsService.setUltimaFecha(last.fecha);
-      }
+    //   if (last.fecha != null) {
+    //     this.metricsService.setUltimaFecha(last.fecha);
+    //   }
 
-      if (last.calorias != null) {
-        this.metricsService.setUltimasCalorias(Number(last.calorias));
-      }
+    //   if (last.calorias != null) {
+    //     this.metricsService.setUltimasCalorias(Number(last.calorias));
+    //   }
 
-      if (last.peso != null) {
-        this.metricsService.setUltimoPeso(Number(last.peso));
-      }
-    });
+    //   if (last.peso != null) {
+    //     this.metricsService.setUltimoPeso(Number(last.peso));
+    //   }
+    // });
 
 
     effect(() => {

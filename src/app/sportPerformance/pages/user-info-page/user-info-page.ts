@@ -31,6 +31,15 @@ export class UserInfoPage {
   /* ===== Recursos ===== */
   readonly infoUserResource = this.sportService.infoUserResource;
   readonly deportista = this.sportService.deportista;
+  readonly lastMetricResource = this.metricsService.lastMetricResource;
+
+  readonly lastMetric = computed(() => {
+    const response = this.lastMetricResource.value();
+    return response?.metrics?.length ? response.metrics[0] : null;
+  });
+
+
+
 
   constructor() {
     effect(() => {
@@ -40,6 +49,23 @@ export class UserInfoPage {
       this.metricsService.setDeportistaId(user.deportista.id);
 
       this.title = user.deportista.disciplina_deportiva;
+    });
+
+
+    // ⬇️ NUEVO EFFECT: última métrica
+    effect(() => {
+      const metric = this.lastMetric();
+      if (!metric) return;
+
+      this.metricsService.setUltimaFecha(metric.fecha);
+
+      if (metric.calorias != null) {
+        this.metricsService.setUltimasCalorias(Number(metric.calorias));
+      }
+
+      if (metric.peso != null) {
+        this.metricsService.setUltimoPeso(Number(metric.peso));
+      }
     });
   }
 

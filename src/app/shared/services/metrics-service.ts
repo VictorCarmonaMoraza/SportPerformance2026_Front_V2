@@ -42,9 +42,17 @@ export class MetricsService {
   * =============================== */
   private readonly deportistaId = signal<number | null>(null);
 
+  // setDeportistaId(id: number) {
+  //   this.deportistaId.set(id);
+  // }
+
+  readonly deportistaId$ = this.deportistaId.asReadonly();
+
   setDeportistaId(id: number) {
     this.deportistaId.set(id);
+    localStorage.setItem('deportistaId', String(id));
   }
+
 
   /* ===============================
    * MÉTRICAS ANUALES (API)
@@ -75,6 +83,24 @@ export class MetricsService {
   readonly yearMetrics = computed(() =>
     this.yearMetricsResource.value()?.metrics ?? []
   );
+
+
+  readonly lastMetricResource = rxResource({
+    params: () => {
+      const id = this.deportistaId();
+      return id ? { id } : null;
+    },
+    stream: ({ params }) => {
+      if (!params) return NEVER;
+      return this.getLastMetrics(params.id);
+    }
+  });
+
+  private getLastMetrics(deportistaId: number) {
+    return this.#http.get<MetricsApi.MetricsResponse>(
+      `${this.metricUrl}/getLastMetric/${deportistaId}`
+    );
+  }
 }
 
 

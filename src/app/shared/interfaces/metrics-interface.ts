@@ -9,15 +9,20 @@ export namespace MetricsApi {
   }
 
   export interface Metric {
-    altura: string;
-    calorias: number;
-    deportista_id: number;
-    distancia: string;
-    fecha: string;
-    frecuencia_cardiaca: number;
     id: number;
-    peso: string;
-    velocidad_media: string;
+    deportista_id: number;
+    fecha: string;
+    peso: number | null;
+    altura: number | null;
+    frecuencia_cardiaca: number | null;
+    velocidad_media: number | null;
+    distancia: number | null;
+    calorias: number | null;
+    duracion_min: number | null;
+    fc_media: number | null;
+    fc_max: number | null;
+    ritmo_medio: number | null;
+    rpe: number | null;
   }
 
 }

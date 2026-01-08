@@ -1,12 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, effect, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { MetricsService } from '../../../shared/services/metrics-service';
+import { UploadService } from '../../../shared/services/upload-service';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-load-page',
-  imports: [],
+  imports: [DecimalPipe],
   templateUrl: './load-page.html',
   styleUrl: './load-page.css',
 })
-export class LoadPage {
+export class LoadPage implements OnInit {
+
+  deportistaId: number | null = Number(localStorage.getItem('deportistaId'));
+  private readonly uploadService = inject(UploadService);
+  @ViewChild('fileInput')
+  fileInput!: ElementRef<HTMLInputElement>;
+
 
   // Extensiones permitidas
   private readonly allowedExtensions = ['xls', 'xlsx', 'csv', 'xml'];
@@ -14,9 +23,16 @@ export class LoadPage {
   selectedFile: File | null = null;
   errorMessage: string | null = null;
 
-  /**
-   * Evento al seleccionar archivo (click o drag&drop)
-   */
+  ngOnInit(): void {
+    const storedId = localStorage.getItem('deportistaId');
+    this.deportistaId = storedId ? Number(storedId) : null;
+
+    console.log('ID deportista:', this.deportistaId);
+  }
+
+  /* ===============================
+   * INPUT FILE (CLICK)
+   * =============================== */
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
 
@@ -25,11 +41,19 @@ export class LoadPage {
     }
 
     const file = input.files[0];
+    this.processFile(file);
+  }
+
+  /* ===============================
+   * PROCESAR FICHERO
+   * =============================== */
+  private processFile(file: File): void {
     const extension = this.getFileExtension(file.name);
 
     if (!this.allowedExtensions.includes(extension)) {
       this.resetFile();
-      this.errorMessage = 'Formato de archivo no permitido. Solo XLS, XLSX, CSV o XML.';
+      this.errorMessage =
+        'Formato de archivo no permitido. Solo XLS, XLSX, CSV o XML.';
       return;
     }
 
@@ -37,33 +61,55 @@ export class LoadPage {
     this.errorMessage = null;
   }
 
-  /**
-   * Obtiene la extensión del archivo
-   */
+  /* ===============================
+   * UTILIDADES
+   * =============================== */
   private getFileExtension(filename: string): string {
     return filename.split('.').pop()?.toLowerCase() ?? '';
   }
 
-  /**
-   * Limpia la selección
-   */
   resetFile(): void {
     this.selectedFile = null;
   }
 
-  /**
-   * Enviar archivo al backend
-   */
+  /* ===============================
+   * SUBIR ARCHIVO
+   * =============================== */
   upload(): void {
     if (!this.selectedFile) {
       this.errorMessage = 'Debes seleccionar un archivo.';
       return;
     }
 
-    const formData = new FormData();
-    formData.append('file', this.selectedFile);
+    if (!this.deportistaId) {
+      this.errorMessage = 'No hay deportista seleccionado.';
+      return;
+    }
 
-    // Aquí irá la llamada HTTP (HttpClient)
-    // this.http.post('/api/metrics/import', formData).subscribe(...)
+    this.uploadService
+      .uploadMetricsFile(this.selectedFile, this.deportistaId)
+      .subscribe({
+        next: response => {
+          console.log('Upload OK:', response);
+          this.errorMessage = null;
+          this.resetForm();
+        },
+        error: err => {
+          console.error('Upload ERROR:', err);
+          this.errorMessage = 'Error al subir el archivo.';
+          this.resetForm();
+        },
+      });
   }
+
+  private resetForm(): void {
+    this.selectedFile = null;
+    this.errorMessage = null;
+
+    if (this.fileInput) {
+      this.fileInput.nativeElement.value = '';
+    }
+  }
+
+
 }
