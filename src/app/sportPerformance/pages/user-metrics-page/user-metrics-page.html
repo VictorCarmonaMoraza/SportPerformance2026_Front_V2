@@ -7,12 +7,15 @@
         Predicciones de calorías
       </h2>
 
-      <div class="flex-1 min-h-0">
+      <!-- CONTENEDOR CENTRAL -->
+      <div class="flex-1 min-h-0 flex items-center justify-center">
         @if (predictions.length > 0) {
-        <app-chart-prediction [predictions]="predictions" [unit]="unidad" />
-        }@else{
-        <p>Aun no tenemos predicciones</p>
-
+        <app-chart-prediction [predictions]="predictions" [unit]="unidad">
+        </app-chart-prediction>
+        } @else {
+        <p class="text-white text-lg font-semibold opacity-80 text-center">
+          Aún no tenemos predicciones
+        </p>
         }
       </div>
 
