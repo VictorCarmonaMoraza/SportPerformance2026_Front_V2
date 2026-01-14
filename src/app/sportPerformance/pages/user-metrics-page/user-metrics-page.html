@@ -1,115 +1,78 @@
-<div class="min-h-screen bg-slate-100 p-6">
-  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+<div class="h-[calc(100vh-64px-56px)] px-2">
+  <div class="grid h-full grid-cols-1 md:grid-cols-2 grid-rows-2 gap-6">
 
-    <!-- Card 1 -->
-    <div class="bg-white rounded-xl shadow p-4 flex flex-col">
-      <h3 class="text-sm font-semibold text-gray-700">
-        Proposed Undeveloped Lots
-      </h3>
-      <p class="text-xs text-gray-400 mb-4">Future Development</p>
+    <!-- Predicciones de calorias -->
+    <div class="rounded-xl p-3 bg-gradient-to-br from-purple-500 to-blue-500 shadow-lg flex flex-col h-full">
+      <h2 class="text-white text-xl font-semibold mb-3">
+        Predicciones de calorías
+      </h2>
 
-      <div class="flex items-end justify-between">
-        <div>
-          <p class="text-3xl font-bold">20,960</p>
-          <p class="text-xs text-gray-400">Developed lots</p>
+      <div class="flex-1 min-h-0">
+        @if (predictions.length > 0) {
+        <app-chart-prediction [predictions]="predictions" [unit]="unidad" />
+        }@else{
+        <p>Aun no tenemos predicciones</p>
+
+        }
+      </div>
+
+      <button class="btn btn-soft btn-success btn-lg mt-3 w-full" (click)="PredictionCalories()">
+        Predecir
+      </button>
+    </div>
+
+
+    <!-- Weekly -->
+    <div class="rounded-xl p-3 bg-gradient-to-br from-teal-50 to-sky-500 shadow-lg flex flex-col">
+      <h2 class="text-gray-600 text-xl font-semibold text-stroke-black">
+        {{ title }}
+      </h2>
+      <div class="flex-1 min-h-0">
+        <app-evolution-by-week />
+      </div>
+    </div>
+
+    <!-- Peso -->
+    <div class="rounded-xl p-3 bg-gradient-to-br from-orange-400 to-yellow-500 shadow-lg">
+      <h2 class="text-white text-xl font-semibold mb-3">
+        Peso y calorías actuales
+      </h2>
+
+
+      <div class="flex-1 flex flex-col items-center justify-center">
+        <div class="text-6xl font-bold text-white text-center ">
+          {{ ultimoPeso() }} <span class="text-4xl">kg</span>
         </div>
-        <div class="h-24 w-32 bg-slate-100 rounded-md flex items-center justify-center text-xs text-gray-400">
-          Chart
-        </div>
+        <h3 class="text-4xl text-white mt-2 opacity-80 text-center">
+          {{ ultimasCalorias() }} Calorias
+        </h3>
+        <h1 class="text-4xl text-white mt-2 opacity-80 text-center">
+          {{ ultimaFecha() }} ultimo dia de entreno
+        </h1>
+
+        <h1 class="text-4xl text-black mt-2 opacity-80 text-center">
+          {{ fechaActual() | date: 'yyyy/MM/dd' }}
+        </h1>
+        <h1 class="text-4xl mt-2 text-center opacity-80" [class.text-white]="diasSinEntrenar() === 0"
+          [class.text-red-500]="diasSinEntrenar() !== null && diasSinEntrenar()! > 0">
+          @if (diasSinEntrenar() === 0) {
+          Entrenaste hoy 💪
+          } @else if (diasSinEntrenar() !== null) {
+          {{ diasSinEntrenar() }} días sin entrenar
+          }
+        </h1>
+
+
       </div>
     </div>
 
-    <!-- Card 2 -->
-    <div class="bg-white rounded-xl shadow p-4 flex flex-col">
-      <h3 class="text-sm font-semibold text-gray-700">
-        Residential Land Activity
-      </h3>
-      <p class="text-xs text-gray-400 mb-4">By precinct</p>
-
-      <div class="h-32 bg-slate-100 rounded-md flex items-center justify-center text-xs text-gray-400">
-        Chart
-      </div>
-    </div>
-
-    <!-- Card 3 -->
-    <div class="bg-white rounded-xl shadow p-4 flex flex-col">
-      <h3 class="text-sm font-semibold text-gray-700">
-        Proposed Undeveloped Lots by Precinct
-      </h3>
-      <p class="text-xs text-gray-400 mb-4">Distribution across the shire</p>
-
-      <div class="h-32 bg-slate-100 rounded-md flex items-center justify-center text-xs text-gray-400">
-        Chart
-      </div>
-    </div>
-
-    <!-- Card 4 -->
-    <div class="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
-      <h3 class="text-sm font-semibold text-gray-700">
-        Developed Lots
-      </h3>
-      <p class="text-xs text-gray-400 mb-2">Lots with titles issued</p>
-
-      <div class="flex items-center justify-between">
-        <p class="text-3xl font-bold">16,248</p>
-        <span class="text-green-600 text-sm font-semibold">+4%</span>
-      </div>
-    </div>
-
-    <!-- Card 5 -->
-    <div class="bg-white rounded-xl shadow p-4">
-      <h3 class="text-sm font-semibold text-gray-700">
-        Subdivision Lots Lodged
-      </h3>
-      <p class="text-xs text-gray-400 mb-4">YoY comparison</p>
-
-      <div class="h-28 bg-slate-100 rounded-md flex items-center justify-center text-xs text-gray-400">
-        Chart
-      </div>
-    </div>
-
-    <!-- Card 6 -->
-    <div class="bg-white rounded-xl shadow p-4">
-      <h3 class="text-sm font-semibold text-gray-700">
-        Subdivision Lots Issued SOC
-      </h3>
-      <p class="text-xs text-gray-400 mb-4">YoY comparison</p>
-
-      <div class="h-28 bg-slate-100 rounded-md flex items-center justify-center text-xs text-gray-400">
-        Chart
-      </div>
-    </div>
-
-    <!-- Card 7 -->
-    <div class="bg-white rounded-xl shadow p-4 flex flex-col items-center justify-center text-center">
-      <h3 class="text-sm font-semibold text-gray-700 mb-2">
-        Festival Activity
-      </h3>
-      <p class="text-4xl font-bold">6</p>
-      <p class="text-xs text-gray-400 mt-1">Events in the Shire per Day</p>
-    </div>
-
-    <!-- Card 8 -->
-    <div class="bg-white rounded-xl shadow p-4">
-      <h3 class="text-sm font-semibold text-gray-700">
-        New Families Moving to the Shire
-      </h3>
-      <p class="text-xs text-gray-400 mb-4">YoY comparison</p>
-
-      <div class="h-28 bg-slate-100 rounded-md flex items-center justify-center text-xs text-gray-400">
-        Chart
-      </div>
-    </div>
-
-    <!-- Card 9 -->
-    <div class="bg-white rounded-xl shadow p-4">
-      <h3 class="text-sm font-semibold text-gray-700">
-        Babies Born in the Shire
-      </h3>
-      <p class="text-xs text-gray-400 mb-4">YoY comparison</p>
-
-      <div class="h-28 bg-slate-100 rounded-md flex items-center justify-center text-xs text-gray-400">
-        Chart
+    <!-- Anual -->
+    <div class="rounded-xl p-3 bg-gradient-to-br from-orange-500 to-yellow-400 shadow-lg flex flex-col">
+      <h2 class="text-gray-600 text-xl font-semibold text-stroke-black">
+        Evolución Anual
+      </h2>
+      <div class="flex-1 min-h-0">
+        <app-evolution-by-year />
       </div>
     </div>
 
