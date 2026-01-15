@@ -17,9 +17,13 @@ export class UserMetricsPage {
   private readonly machineLearningService = inject(MachineLearningService);
   predictions: PredictionApi.Prediction[] = [];
   predictionsVM: PredictionApi.Prediction[] = [];
+  predictionsFC: PredictionApi.Prediction[] = [];
+  predictionsPeso: PredictionApi.Prediction[] = [];
   title: string = '';
   unidad = 'cal';
   unidadVM = 'km/h';
+  unidadFC = 'bmp';
+  unidadPeso = 'Kg';
   deportistaId = localStorage.getItem('deportistaId');
 
   PredictionCalories() {
@@ -39,12 +43,46 @@ export class UserMetricsPage {
 
   }
 
-  PredictionCalories2() {
+  PredictionVelocidad_Media() {
     console.log('Desde el metodo dos', Number(this.deportistaId))
     //Llamamos al metodo predicciones con el id del usuario
     this.machineLearningService.getVelocidadMediaPrediction(Number(this.deportistaId)).subscribe({
       next: (response) => {
         this.predictionsVM = response.predictions;
+        console.log('Las predicciones son:', this.predictions);
+
+        //this.loading = false;
+      },
+      error: (err) => {
+        //this.error = err?.error?.error ?? 'Error al obtener predicciones';
+        //this.loading = false;
+      }
+    });
+  }
+
+  PredictionFrecuencia_Cardiaca() {
+    console.log('Desde el metodo dos', Number(this.deportistaId))
+    //Llamamos al metodo predicciones con el id del usuario
+    this.machineLearningService.getFrecuenciaCardiacaPrediction(Number(this.deportistaId)).subscribe({
+      next: (response) => {
+        this.predictionsFC = response.predictions;
+        console.log('Las predicciones son:', this.predictions);
+
+        //this.loading = false;
+      },
+      error: (err) => {
+        //this.error = err?.error?.error ?? 'Error al obtener predicciones';
+        //this.loading = false;
+      }
+    });
+  }
+
+  PredictionPeso() {
+    console.log('Desde el metodo dos', Number(this.deportistaId))
+    //Llamamos al metodo predicciones con el id del usuario
+    this.machineLearningService.getPesoPrediction(Number(this.deportistaId)).subscribe({
+      next: (response) => {
+        this.predictionsPeso = response.predictions;
         console.log('Las predicciones son:', this.predictions);
 
         //this.loading = false;

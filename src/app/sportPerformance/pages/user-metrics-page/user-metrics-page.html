@@ -43,7 +43,7 @@
         }
       </div>
 
-      <button class="btn btn-soft btn-success btn-lg mt-3 w-full" (click)="PredictionCalories2()">
+      <button class="btn btn-soft btn-success btn-lg mt-3 w-full" (click)="PredictionVelocidad_Media()">
         Predecir
       </button>
     </div>
@@ -51,14 +51,14 @@
     <!-- Peso -->
     <div class="rounded-xl p-3 bg-gradient-to-br from-purple-500 to-blue-500 shadow-lg flex flex-col h-full">
       <h2 class="text-white text-xl font-semibold mb-3">
-        Predicciones de calorías
+        Predicciones de Frecuencia Cardiaca
       </h2>
 
       <!-- CONTENEDOR CENTRAL -->
       <div class="flex-1 min-h-0 flex items-center justify-center">
-        @if (predictions.length > 0) {
-        <!-- <app-chart-prediction [predictions]="predictions" [unit]="unidad">
-        </app-chart-prediction> -->
+        @if (predictionsFC.length > 0) {
+        <app-chart-prediction [predictions]="predictionsFC" [unit]="unidadFC">
+        </app-chart-prediction>
         } @else {
         <p class="text-white text-lg font-semibold opacity-80 text-center">
           Aún no tenemos predicciones
@@ -66,7 +66,7 @@
         }
       </div>
 
-      <button class="btn btn-soft btn-success btn-lg mt-3 w-full" (click)="PredictionCalories2()">
+      <button class="btn btn-soft btn-success btn-lg mt-3 w-full" (click)="PredictionFrecuencia_Cardiaca()">
         Predecir
       </button>
     </div>
@@ -79,9 +79,9 @@
 
       <!-- CONTENEDOR CENTRAL -->
       <div class="flex-1 min-h-0 flex items-center justify-center">
-        @if (predictions.length > 0) {
-        <!-- <app-chart-prediction [predictions]="predictions" [unit]="unidad">
-        </app-chart-prediction> -->
+        @if (predictionsPeso.length > 0) {
+        <app-chart-prediction [predictions]="predictionsPeso" [unit]="unidadPeso">
+        </app-chart-prediction>
         } @else {
         <p class="text-white text-lg font-semibold opacity-80 text-center">
           Aún no tenemos predicciones
@@ -89,7 +89,7 @@
         }
       </div>
 
-      <button class="btn btn-soft btn-success btn-lg mt-3 w-full" (click)="PredictionCalories2()">
+      <button class="btn btn-soft btn-success btn-lg mt-3 w-full" (click)="PredictionPeso()">
         Predecir
       </button>
     </div>

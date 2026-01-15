@@ -22,4 +22,16 @@ export class MachineLearningService {
       `${this.machineLearningUrl}/machine_learning_velocidad_media/${deportistaId}`
     );
   }
+
+  getFrecuenciaCardiacaPrediction(deportistaId: number): Observable<PredictionApi.PredictionResponse> {
+    return this.#http.get<PredictionApi.PredictionResponse>(
+      `${this.machineLearningUrl}/machine_learning_frecuencia_cardiaca/${deportistaId}`
+    );
+  }
+
+  getPesoPrediction(deportistaId: number): Observable<PredictionApi.PredictionResponse> {
+    return this.#http.get<PredictionApi.PredictionResponse>(
+      `${this.machineLearningUrl}/machine_learning_peso/${deportistaId}`
+    );
+  }
 }
