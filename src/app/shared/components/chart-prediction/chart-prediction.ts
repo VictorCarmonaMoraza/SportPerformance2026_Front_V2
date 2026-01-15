@@ -9,7 +9,6 @@ import {
 import * as echarts from 'echarts';
 import { PredictionApi } from '../../interfaces/prediction-calories-interface';
 
-
 @Component({
   selector: 'app-chart-prediction',
   standalone: true,
@@ -21,18 +20,26 @@ export default class ChartPrediction {
   @ViewChild('chartPrediction', { static: false })
   chartElement!: ElementRef<HTMLDivElement>;
 
-  // 👉 INPUT REAL: datos de negocio
+  // 👉 INPUTS
   predictions = input.required<PredictionApi.Prediction[]>();
   unit = input.required<string>();
 
   private chart!: echarts.ECharts;
   private resizeObserver!: ResizeObserver;
 
-  // 👉 Computed que transforma Prediction[] → EChartsOption
+  // 👉 Opciones del chart
   chartOption = computed<echarts.EChartsOption>(() => {
     const predictions = this.predictions();
 
-    const values = predictions.map(p => p.calorias_predichas);
+    // 🔒 valores numéricos seguros
+    const values = predictions
+      .map(p => p.predicciones)
+      .filter((v): v is number => typeof v === 'number');
+
+    if (values.length === 0) {
+      return { series: [] };
+    }
+
     const dates = predictions.map(p => {
       const d = new Date(p.fecha);
       return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
@@ -40,7 +47,6 @@ export default class ChartPrediction {
 
     const minValue = Math.min(...values);
     const maxValue = Math.max(...values);
-
     const padding = (maxValue - minValue) * 0.2 || 1;
 
     return {
@@ -51,31 +57,19 @@ export default class ChartPrediction {
         right: 20,
         containLabel: true
       },
+
       tooltip: {
         trigger: 'axis',
-        axisPointer: {
-          type: 'line'
-        },
+        axisPointer: { type: 'line' },
         formatter: (params: any) => {
           const p = params[0];
           return `
-          <strong>${p.axisValue}</strong><br/>
-          ${p.value.toFixed(2)} ${this.unit()}
-        `;
+            <strong>${p.axisValue}</strong><br/>
+            ${Number(p.value).toFixed(2)} ${this.unit()}
+          `;
         }
       },
-      yAxis: {
-        type: 'value',
-        min: minValue - padding,
-        max: maxValue + padding,
-        scale: true,
-        splitNumber: 4,
-        axisLabel: {
-          formatter: (value: number) => value.toFixed(2),
-          margin: 8,
-          color: '#000000'
-        }
-      },
+
       xAxis: {
         type: 'category',
         data: dates,
@@ -84,44 +78,65 @@ export default class ChartPrediction {
           color: '#000000'
         }
       },
+
+      yAxis: {
+        type: 'value',
+        min: minValue - padding,
+        max: maxValue + padding,
+        scale: true,
+        splitNumber: 4,
+        axisLabel: {
+          formatter: (v: number) => v.toFixed(2),
+          color: '#000000'
+        }
+      },
+
       series: [
         {
           type: 'line',
           data: values,
+
+          // 🟢 ANIMACIÓN PROGRESIVA DE LA LÍNEA
+          animation: true,
+          animationDuration: 1600,
+          animationEasing: 'cubicOut',
+          animationDelay: (idx: number) => idx * 80,
+
           symbol: 'circle',
+          showSymbol: true,
           symbolSize: 6,
+
           lineStyle: {
             color: 'red',
             width: 3
           },
           itemStyle: {
             color: 'blue'
-          },
+          }
         }
       ]
     };
-
-
   });
-
 
   constructor() {
     effect(() => {
       if (!this.chart) return;
-      this.chart.setOption(this.chartOption(), { notMerge: true });
-      this.chart.resize();
+
+      // 🔑 NO reinicia animación en cada cambio
+      this.chart.setOption(this.chartOption(), { notMerge: false });
     });
   }
 
   ngAfterViewInit(): void {
     const dom = this.chartElement.nativeElement;
     this.chart = echarts.init(dom);
-    this.chart.setOption(this.chartOption());
+
+    // 🔑 Animación SOLO la primera vez
+    this.chart.setOption(this.chartOption(), { notMerge: true });
 
     this.resizeObserver = new ResizeObserver(() => {
       this.chart.resize();
     });
-
 
     this.resizeObserver.observe(dom);
   }

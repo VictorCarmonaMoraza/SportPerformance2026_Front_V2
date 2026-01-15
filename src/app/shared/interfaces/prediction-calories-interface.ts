@@ -8,7 +8,7 @@ export namespace PredictionApi {
   }
 
   export interface Prediction {
-    calorias_predichas: number;
+    predicciones: number;
     fecha: Date;
   }
 }

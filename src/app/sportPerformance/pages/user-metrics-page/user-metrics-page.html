@@ -28,13 +28,13 @@
     <!-- Weekly -->
     <div class="rounded-xl p-3 bg-gradient-to-br from-purple-500 to-blue-500 shadow-lg flex flex-col h-full">
       <h2 class="text-white text-xl font-semibold mb-3">
-        Predicciones de calorías
+        Predicciones de velocidad media
       </h2>
 
       <!-- CONTENEDOR CENTRAL -->
       <div class="flex-1 min-h-0 flex items-center justify-center">
-        @if (predictions.length > 0) {
-        <app-chart-prediction [predictions]="predictions" [unit]="unidad">
+        @if (predictionsVM.length > 0) {
+        <app-chart-prediction [predictions]="predictionsVM" [unit]="unidadVM">
         </app-chart-prediction>
         } @else {
         <p class="text-white text-lg font-semibold opacity-80 text-center">
@@ -57,8 +57,8 @@
       <!-- CONTENEDOR CENTRAL -->
       <div class="flex-1 min-h-0 flex items-center justify-center">
         @if (predictions.length > 0) {
-        <app-chart-prediction [predictions]="predictions" [unit]="unidad">
-        </app-chart-prediction>
+        <!-- <app-chart-prediction [predictions]="predictions" [unit]="unidad">
+        </app-chart-prediction> -->
         } @else {
         <p class="text-white text-lg font-semibold opacity-80 text-center">
           Aún no tenemos predicciones
@@ -80,8 +80,8 @@
       <!-- CONTENEDOR CENTRAL -->
       <div class="flex-1 min-h-0 flex items-center justify-center">
         @if (predictions.length > 0) {
-        <app-chart-prediction [predictions]="predictions" [unit]="unidad">
-        </app-chart-prediction>
+        <!-- <app-chart-prediction [predictions]="predictions" [unit]="unidad">
+        </app-chart-prediction> -->
         } @else {
         <p class="text-white text-lg font-semibold opacity-80 text-center">
           Aún no tenemos predicciones

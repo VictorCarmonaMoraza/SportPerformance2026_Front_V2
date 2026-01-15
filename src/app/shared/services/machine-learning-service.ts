@@ -16,4 +16,10 @@ export class MachineLearningService {
       `${this.machineLearningUrl}/machine_learning_calories/${deportistaId}`
     );
   }
+
+  getVelocidadMediaPrediction(deportistaId: number): Observable<PredictionApi.PredictionResponse> {
+    return this.#http.get<PredictionApi.PredictionResponse>(
+      `${this.machineLearningUrl}/machine_learning_velocidad_media/${deportistaId}`
+    );
+  }
 }
