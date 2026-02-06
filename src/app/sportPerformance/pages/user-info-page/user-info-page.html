@@ -1,13 +1,15 @@
 <div class="h-[calc(100vh-64px-56px)] px-2">
   <div class="grid h-full grid-cols-1 md:grid-cols-2 grid-rows-2 gap-6">
 
-    <!-- Monthly Progress -->
+    <!-- Informacion del usuario-->
     <div class="rounded-xl p-3 bg-gradient-to-br from-purple-500 to-blue-500 shadow-lg flex flex-col">
       <div class="flex-1 min-h-0">
         <!-- <app-evolution-by-month /> -->
-        @if(deportista()!=null){
+
         <app-info-user-profile [deportista]="deportista()!" />
-        }
+        <!-- }@else{
+        <app-create-user-page />
+        } -->
       </div>
     </div>
 
@@ -17,7 +19,12 @@
         {{ title }}
       </h2>
       <div class="flex-1 min-h-0">
+
         <app-evolution-by-week />
+
+
+
+
       </div>
     </div>
 
@@ -26,7 +33,6 @@
       <h2 class="text-white text-xl font-semibold mb-3">
         Peso y calorías actuales
       </h2>
-
 
       <div class="flex-1 flex flex-col items-center justify-center">
         <div class="text-6xl font-bold text-white text-center ">
@@ -50,9 +56,9 @@
           {{ diasSinEntrenar() }} días sin entrenar
           }
         </h1>
-
-
       </div>
+
+
     </div>
 
     <!-- Anual -->
@@ -60,9 +66,12 @@
       <h2 class="text-gray-600 text-xl font-semibold text-stroke-black">
         Evolución Anual
       </h2>
+
       <div class="flex-1 min-h-0">
         <app-evolution-by-year />
       </div>
+
+
     </div>
 
   </div>

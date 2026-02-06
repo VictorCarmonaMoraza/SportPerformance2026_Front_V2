@@ -33,7 +33,7 @@ export class EvolutionByWeek {
   weekResource = rxResource({
     params: () => {
       const user = this.infoUserResource.value();
-      return user ? { id: user.deportista.id } : null;
+      return user ? { id: user.data.id } : null;
     },
     stream: ({ params }) => {
       if (!params) {

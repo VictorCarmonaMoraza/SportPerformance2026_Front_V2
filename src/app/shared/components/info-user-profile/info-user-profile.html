@@ -36,13 +36,14 @@
 
   <!-- COLUMNA DERECHA: FOTO -->
   <div class="profile-photo-container">
-    @if (userPhotoResource.value()) {
-    <img [src]="photoSrc()" alt="Foto de perfil" class="profile-photo" />
+    @if (userPhotoResource.hasValue()) {
+    <img [src]="photoSrc()" class="profile-photo" />
+    }
+    @else if (userPhotoResource.error()) {
+    <img src="assets/images/no-image.jpg" class="profile-photo" />
     }
     @else {
-    <img src="assets/images/no-image.jpg" alt="Avatar por defecto" class="profile-photo" />
+    <img src="assets/images/loading-avatar.gif" class="profile-photo" />
     }
   </div>
-
-
 </div>

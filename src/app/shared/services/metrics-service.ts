@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { NEVER, Observable } from 'rxjs';
 import { MetricsApi } from '../interfaces/metrics-interface';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { SportApi } from '../interfaces/sport-interface';
 
 @Injectable({
   providedIn: 'root',
@@ -101,6 +102,17 @@ export class MetricsService {
       `${this.metricUrl}/getLastMetric/${deportistaId}`
     );
   }
+  //Crear un deportista
+  createDeportista(
+    payload: Omit<SportApi.Deportista, 'id'>
+  ): Observable<SportApi.SportResponse> {
+
+    return this.#http.post<SportApi.SportResponse>(
+      `${this.metricUrl}/create_sport`,
+      payload
+    );
+  }
+
 }
 
 

@@ -8,19 +8,22 @@
   <div class="navbar-center hidden lg:flex">
     <ul class="menu menu-horizontal px-1">
       <li>
-        <a [routerLink]="['/sport/user-sport', idRuta()]">
-          Perfil
+        <a [routerLink]="['/sport/user-sport', idRuta()]" routerLinkActive="active bg-blue-300"
+          [routerLinkActiveOptions]="{ exact: true }">
+          Métricas
         </a>
       </li>
 
       <li>
-        <a [routerLink]="['/sport/user-metrics', idRuta()]">
-          Métricas
+        <a [routerLink]="['/sport/user-metrics', idRuta()]" routerLinkActive="active bg-blue-300"
+          [routerLinkActiveOptions]="{ exact: true }">
+          Predicciones
         </a>
       </li>
       <li>
-        <a [routerLink]="['/sport/load-data', idRuta()]">
-          LoadData
+        <a [routerLink]="['/sport/load-data', idRuta()]" routerLinkActive="active bg-blue-300"
+          [routerLinkActiveOptions]="{ exact: true }">
+          LoadTraining
         </a>
       </li>
     </ul>

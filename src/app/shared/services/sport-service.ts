@@ -38,7 +38,11 @@ export class SportService {
   });
 
   readonly deportista = computed(() =>
-    this.infoUserResource.value()?.deportista ?? null
+    this.infoUserResource.value()?.data ?? null
   );
+
+  reloadInfoUser() {
+    this.infoUserResource.reload();
+  }
 
 }
