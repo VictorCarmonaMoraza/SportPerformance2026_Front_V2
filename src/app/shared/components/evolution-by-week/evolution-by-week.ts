@@ -63,31 +63,6 @@ export class EvolutionByWeek {
   }
 
   constructor() {
-    // effect(() => {
-    //   const metrics = this.metrics();
-    //   if (!metrics.length) return;
-
-    //   const ordered = [...metrics].sort(
-    //     (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
-    //   );
-
-    //   const last = ordered.at(-1);
-    //   if (!last) return;
-
-    //   if (last.fecha != null) {
-    //     this.metricsService.setUltimaFecha(last.fecha);
-    //   }
-
-    //   if (last.calorias != null) {
-    //     this.metricsService.setUltimasCalorias(Number(last.calorias));
-    //   }
-
-    //   if (last.peso != null) {
-    //     this.metricsService.setUltimoPeso(Number(last.peso));
-    //   }
-    // });
-
-
     effect(() => {
       const id = this.id_user();
       if (id) {
@@ -116,8 +91,6 @@ export class EvolutionByWeek {
     );
   });
 
-
-  /* ========= OPCIÓN ECHARTS (REACTIVA) ========= */
   readonly option = computed<EChartsOption | null>(() => {
     if (!this.isChartReady()) {
       return null;
