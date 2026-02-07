@@ -4,7 +4,7 @@ export namespace SportApi {
 
 
   export interface SportResponse {
-    deportista: Deportista;
+    data: Deportista;
     message: string;
     status: number;
   }

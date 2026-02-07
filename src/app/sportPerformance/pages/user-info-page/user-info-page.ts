@@ -46,9 +46,9 @@ export class UserInfoPage {
       const user = this.infoUserResource.value();
       if (!user) return;
 
-      this.metricsService.setDeportistaId(user.deportista.id);
+      this.metricsService.setDeportistaId(user.data.id);
 
-      this.title = user.deportista.disciplina_deportiva;
+      this.title = user.data.disciplina_deportiva;
     });
 
 
