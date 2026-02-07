@@ -3,10 +3,12 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { SportApi } from '../../interfaces/sport-interface';
 import { UserService } from '../../services/user-service';
+import { CreateUserPage } from '../../../sportPerformance/pages/user-info-page/create-user-page/create-user-page';
+import { NEVER, catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-info-user-profile',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CreateUserPage],
   templateUrl: './info-user-profile.html',
   styleUrl: './info-user-profile.css',
 })
@@ -24,13 +26,14 @@ export class InfoUserProfile implements OnInit {
       telefono: [{ value: '', disabled: true }],
     });
 
-    this.syncFormWithDeportista();
+    // this.syncFormWithDeportista();
   }
 
-  syncFormWithDeportista() {
+
+  constructor() {
     effect(() => {
       const d = this.deportista();
-      if (!d) return;
+      if (!d || !this.form) return;
 
       this.form.patchValue({
         nombre: d.nombre,
@@ -41,10 +44,20 @@ export class InfoUserProfile implements OnInit {
     });
   }
 
+
   userPhotoResource = rxResource({
-    params: () => ({ id: this.deportista().usuario_id }),
+    params: () => {
+      const deportista = this.deportista();
+      return deportista?.usuario_id
+        ? { id: deportista.usuario_id }
+        : null;
+    },
     stream: ({ params }) => {
-      return this.userService.getUserPhoto(params.id);
+      if (!params) return NEVER;
+
+      return this.userService.getUserPhoto(params.id).pipe(
+        catchError(() => of(null)) // 👈 NO hay foto = null
+      );
     }
   });
 

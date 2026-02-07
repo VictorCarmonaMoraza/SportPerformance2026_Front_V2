@@ -5,11 +5,10 @@ import { EvolutionByYear } from "../../../shared/components/evolution-by-year/ev
 import { InfoUserProfile } from "../../../shared/components/info-user-profile/info-user-profile";
 import { MetricsService } from '../../../shared/services/metrics-service';
 import { SportService } from '../../../shared/services/sport-service';
-import { CreateUserPage } from './create-user-page/create-user-page';
 
 @Component({
   selector: 'app-user-info-page',
-  imports: [EvolutionByWeek, EvolutionByYear, DatePipe, InfoUserProfile, CreateUserPage],
+  imports: [EvolutionByWeek, EvolutionByYear, DatePipe, InfoUserProfile],
   templateUrl: './user-info-page.html',
   styleUrl: './user-info-page.css',
 })
@@ -40,22 +39,26 @@ export class UserInfoPage {
   });
 
   constructor() {
-    effect(() => {
-      console.log({
-        userId: (this.sportService as any).userId?.(),
-        loading: this.sportService.infoUserResource.isLoading(),
-        value: this.sportService.infoUserResource.value(),
-        error: this.sportService.infoUserResource.error()
-      });
-    });
+    // effect(() => {
+    //   console.log({
+    //     userId: (this.sportService as any).userId?.(),
+    //     loading: this.sportService.infoUserResource.isLoading(),
+    //     value: this.sportService.infoUserResource.value(),
+    //     error: this.sportService.infoUserResource.error()
+    //   });
+    // });
 
     effect(() => {
+      //Linea que devuelve null
       const user = this.infoUserResource.value();
       if (!user) return;
 
       this.metricsService.setDeportistaId(user.data.id);
 
-      this.title = user.data.disciplina_deportiva;
+      this.title =
+        user.data.disciplina_deportiva?.trim()
+          ? user.data.disciplina_deportiva
+          : 'Aún no tenemos disciplina deportiva';
     });
 
 
