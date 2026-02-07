@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 import { UserApi } from '../interfaces/user.interface';
 
@@ -12,10 +12,22 @@ export class UserService {
   readonly #http = inject(HttpClient)
 
 
-  getUserPhoto(userId: number): Observable<UserApi.UserResponse> {
+  getUserPhoto2(userId: number): Observable<UserApi.UserResponse> {
     return this.#http.get<UserApi.UserResponse>(
       `${this.metricUrl}/${userId}/photo`
     );
+  }
+
+
+  getUserPhoto(userId: number) {
+    return this.#http
+      .get<{ foto_url: string }>(`${this.metricUrl}/photo/${userId}`)
+      .pipe(
+        catchError(err => {
+          // ⚠️ Transformamos a Error REAL
+          return of(null);
+        })
+      );
   }
 
 

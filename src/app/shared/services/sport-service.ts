@@ -1,48 +1,103 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { SportApi } from '../interfaces/sport-interface';
-import { NEVER, Observable } from 'rxjs';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { NEVER, Observable, catchError, map, of, tap } from 'rxjs';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SportService {
-  private metricUrl = `${environment.apiUrl}/sport`;
-  readonly #http = inject(HttpClient)
 
-  private userId = signal<number | null>(null);
+  activatedRoute = inject(ActivatedRoute);
 
-  getInfoUser(deportista_id: number): Observable<SportApi.SportResponse> {
-    return this.#http.get<SportApi.SportResponse>(
-      `${this.metricUrl}/getInfoSport/${deportista_id}`
+  readonly id_deportista = toSignal(
+    this.activatedRoute.paramMap.pipe(
+      map(pm => {
+        const id = pm.get('id');
+        return id ? Number(id) : null;
+      }),
+      tap(id => console.log('🧭 ID desde ruta:', id))
+    ),
+    { initialValue: null }
+  );
+
+  /* ===============================
+   * DEPENDENCIAS
+   * =============================== */
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = `${environment.apiUrl}/sport`;
+
+  /* ===============================
+   * ESTADO INTERNO
+   * =============================== */
+  private readonly userId = signal<number | null>(null);
+
+  /* ===============================
+   * API
+   * =============================== */
+  private getInfoUser(deportistaId: number): Observable<SportApi.SportResponse> {
+    return this.http.get<SportApi.SportResponse>(
+      `${this.baseUrl}/getInfoSport/${deportistaId}`
     );
   }
 
-  setUserId(id: number) {
+  setUserId(id: number): void {
     this.userId.set(id);
   }
 
+  /* ===============================
+   * RESOURCE INFO USUARIO
+   * =============================== */
   readonly infoUserResource = rxResource({
     params: () => {
-      const id = this.userId();
+      const id = this.id_deportista();
       return id ? { id } : null;
     },
     stream: ({ params }) => {
-      if (!params) {
-        return NEVER;
-      }
-      return this.getInfoUser(params.id);
+      if (!params) return NEVER;
+
+      const { id } = params; // ✔️ TS seguro
+
+      return this.getInfoUser(id).pipe(
+        catchError(err => {
+          console.warn('⚠️ Error cargando infoUser', err);
+
+          // 🔑 MUY IMPORTANTE:
+          // El resource NO debe entrar en estado error
+          return of(null);
+        })
+      );
     }
   });
 
-  readonly deportista = computed(() =>
+  /* ===============================
+   * SELECTOR DEPORTISTA
+   * =============================== */
+  readonly deportista = computed<SportApi.Deportista | null>(() =>
     this.infoUserResource.value()?.data ?? null
   );
 
-  reloadInfoUser() {
+  /* ===============================
+   * RECARGA MANUAL
+   * =============================== */
+  reloadInfoUser(): void {
     this.infoUserResource.reload();
   }
 
+  /* ===============================
+   * DEBUG RESOURCE (solo desarrollo)
+   * =============================== */
+  readonly debugInfoUserResource = effect(() => {
+    const error = this.infoUserResource.error();
+
+    if (error) {
+      console.error('🔥 infoUserResource EN ERROR', {
+        error,
+        cause: (error as any)?.cause,
+      });
+    }
+  });
 }

@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 import { NEVER, Observable } from 'rxjs';
@@ -103,15 +103,38 @@ export class MetricsService {
     );
   }
   //Crear un deportista
-  createDeportista(
+  UpdateDeportista(
     payload: Omit<SportApi.Deportista, 'id'>
   ): Observable<SportApi.SportResponse> {
 
-    return this.#http.post<SportApi.SportResponse>(
-      `${this.metricUrl}/create_sport`,
+    return this.#http.put<SportApi.SportResponse>(
+      `${this.metricUrl}/updatesport`,
       payload
     );
   }
+
+  /* ===============================
+ * DEBUG RESOURCES MÉTRICAS
+ * =============================== */
+  readonly debugMetricsResources = effect(() => {
+    const yearError = this.yearMetricsResource.error();
+    const lastError = this.lastMetricResource.error();
+
+    if (yearError) {
+      console.error('🔥 yearMetricsResource EN ERROR', {
+        error: yearError,
+        cause: (yearError as any)?.cause,
+      });
+    }
+
+    if (lastError) {
+      console.error('🔥 lastMetricResource EN ERROR', {
+        error: lastError,
+        cause: (lastError as any)?.cause,
+      });
+    }
+  });
+
 
 }
 

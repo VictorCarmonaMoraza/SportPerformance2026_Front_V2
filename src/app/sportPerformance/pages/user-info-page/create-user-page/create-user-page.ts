@@ -46,7 +46,7 @@ export class CreateUserPage implements OnInit {
       ...this.deportistaForm.value
     };
 
-    this.#metrics.createDeportista(payload).subscribe({
+    this.#metrics.UpdateDeportista(payload).subscribe({
       next: (res: SportApi.SportResponse) => {
         const deportistaId = res.data.id;
 

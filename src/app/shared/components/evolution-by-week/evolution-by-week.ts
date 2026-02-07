@@ -47,6 +47,20 @@ export class EvolutionByWeek {
     }
   });
 
+  readonly debugWeekResource = effect(() => {
+    const error = this.weekResource.error();
+
+    if (error) {
+      console.error('🔥 weekResource EN ERROR', {
+        error,
+        cause: (error as any)?.cause,
+      });
+    }
+  });
+
+
+
+
   readonly metrics = computed(() => {
     const value = this.weekResource.value();
     return value?.metrics && Array.isArray(value.metrics)

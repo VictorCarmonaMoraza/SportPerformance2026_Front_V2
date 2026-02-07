@@ -13,7 +13,7 @@ export const sportRoutes: Routes = [
       { path: 'user-sport/:id', component: UserInfoPage },
       { path: 'user-metrics/:id', component: UserMetricsPage },
       { path: 'load-data/:id', component: LoadPage },
-      { path: '**', redirectTo: 'user-sport' }
+      // { path: '**', redirectTo: 'user-sport' }
     ]
   },
 ];
