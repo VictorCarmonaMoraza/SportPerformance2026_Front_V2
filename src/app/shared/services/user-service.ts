@@ -12,11 +12,11 @@ export class UserService {
   readonly #http = inject(HttpClient)
 
 
-  getUserPhoto(userId: number): Observable<UserApi.UserResponse> {
-    return this.#http.get<UserApi.UserResponse>(
-      `${this.metricUrl}/${userId}/photo`
-    );
-  }
+  // getUserPhoto(userId: number): Observable<UserApi.UserResponse> {
+  //   return this.#http.get<UserApi.UserResponse>(
+  //     `${this.metricUrl}/${userId}/photo`
+  //   );
+  // }
 
 
 

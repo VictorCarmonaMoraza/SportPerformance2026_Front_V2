@@ -26,17 +26,17 @@ export class InfoUserProfile implements OnInit {
     });
   }
 
-  userPhotoResource = rxResource({
-    params: () => ({ id: this.deportista().usuario_id }),
-    stream: ({ params }) => {
-      return this.userService.getUserPhoto(params.id);
-    }
-  });
+  // userPhotoResource = rxResource({
+  //   params: () => ({ id: this.deportista().usuario_id }),
+  //   stream: ({ params }) => {
+  //     return this.userService.getUserPhoto(params.id);
+  //   }
+  // });
 
-  photoSrc = computed(() => {
-    const result = this.userPhotoResource.value();
-    return result?.foto_url ?? 'assets/images/no-image.jpg';
-  });
+  // photoSrc = computed(() => {
+  //   const result = this.userPhotoResource.value();
+  //   return result?.foto_url ?? 'assets/images/no-image.jpg';
+  // });
 
 
 
