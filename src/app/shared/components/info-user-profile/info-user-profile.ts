@@ -3,6 +3,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { SportApi } from '../../interfaces/sport-interface';
 import { UserService } from '../../services/user-service';
+import { catchError, NEVER, of } from 'rxjs';
 
 @Component({
   selector: 'app-info-user-profile',
@@ -26,17 +27,36 @@ export class InfoUserProfile implements OnInit {
     });
   }
 
-  // userPhotoResource = rxResource({
-  //   params: () => ({ id: this.deportista().usuario_id }),
-  //   stream: ({ params }) => {
-  //     return this.userService.getUserPhoto(params.id);
-  //   }
-  // });
+  userPhotoResource = rxResource({
+    params: () => {
+      const d = this.deportista();
+      return d?.usuario_id ? { id: d.usuario_id } : null;
+    },
+    stream: ({ params }) => {
+      if (!params) return NEVER;
 
-  // photoSrc = computed(() => {
-  //   const result = this.userPhotoResource.value();
-  //   return result?.foto_url ?? 'assets/images/no-image.jpg';
-  // });
+      return this.userService.getUserPhoto(params.id).pipe(
+        catchError(err => {
+          // ✔️ El 404 es un caso esperado (no hay foto)
+          if (err.status === 404) {
+            console.warn('ℹ️ Usuario sin foto');
+          } else {
+            console.error('❌ Error cargando foto', err);
+          }
+
+          // 🔑 IMPORTANTE:
+          // El resource NO debe entrar en estado error
+          return of(null);
+        })
+      );
+    }
+  });
+
+
+  photoSrc = computed(() => {
+    const result = this.userPhotoResource.value();
+    return result?.foto_url ?? 'assets/images/no-image.jpg';
+  });
 
 
 
